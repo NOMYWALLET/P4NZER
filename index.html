@@ -1,7 +1,7 @@
 import os
 from google.colab import files
 
-html_content_final_stable_v3 = """<!DOCTYPE html>
+html_content_final_stable_v6 = """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -15,42 +15,61 @@ html_content_final_stable_v3 = """<!DOCTYPE html>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=Rajdhani:wght@600&display=swap" rel="stylesheet">
     
     <style>
-        :root{--g:#00ff41;--p:#ff00ff;--d:#000;--r:#ff0040}
+        :root{--g:#00ff41;--p:#ff00ff;--d:#000;--r:#ff0040;--w:#fff}
         *{margin:0;padding:0;box-sizing:border-box}
         
-        /* BODY & BACKGROUND (Le fond le plus stable SANS IMAGE) */
+        /* BODY & BACKGROUND */
         body{
             background:var(--d);color:var(--g);font-family:'Orbitron',monospace;overflow:hidden;height:100vh;position:relative;
             display:flex;flex-direction:column;align-items:center;justify-content:center;
-            /* Fond pur CSS noir, plus de bugs d'image */
             background-color: #000;
         }
 
+        /* EFFET POINTS FLOTTANTS (Simulant les signes et masques) */
+        .star{position:fixed;width:2px;height:2px;background:var(--g);box-shadow:0 0 5px var(--g);z-index:0;animation:float 10s linear infinite}
+        @keyframes float{0%{transform:translateY(0vh);opacity:0}50%{opacity:1}100%{transform:translateY(-100vh);opacity:0}}
+        
+        /* Simuler les signes Degen/Anonymous */
+        .degen-sign {
+            position:fixed;font-size:2rem;color:rgba(255,0,255,0.4); /* Violet plus visible */
+            opacity:0.2; /* Plus de visibilité */
+            pointer-events:none;
+            text-shadow:0 0 5px var(--p);
+            animation:float-glitch 12s infinite alternate ease-in-out;
+            white-space:nowrap;z-index:1;font-family:'Rajdhani',sans-serif;
+        }
+        .degen-sign:nth-child(1){top:8%;left:8%;animation-delay:0s;font-size:2.2rem}
+        .degen-sign:nth-child(2){top:22%;right:12%;animation-delay:2s;color:var(--g)}
+        .degen-sign:nth-child(3){bottom:15%;left:18%;animation-delay:4s;font-size:1.8rem}
+        .degen-sign:nth-child(4){top:45%;right:7%;animation-delay:6s;font-size:2.5rem;color:var(--g)}
+        .degen-sign:nth-child(5){bottom:8%;left:35%;animation-delay:8s;font-size:2.1rem}
+        @keyframes float-glitch{0%{transform:translate(0)}50%{transform:translate(0,-10px) rotate(-1deg)}100%{transform:translate(0)}}
+        
         /* Effet de scan */
         .scan{background:repeating-linear-gradient(0deg,rgba(0,0,0,.1) 0px,rgba(0,0,0,.1) 2px,transparent 2px,transparent 4px);position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;animation:s 8s linear infinite}
         @keyframes s{0%{transform:translateY(-100%)}100%{transform:translateY(100%)}}
         
-        /* Titre Glitch */
+        /* Titre Glitch (Très visible) */
         .glitch{font-size:clamp(3rem,8vw,6rem);font-weight:900;text-align:center;background:linear-gradient(90deg,var(--g),var(--p),var(--g));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:g1 2.5s infinite;margin-bottom:10px}
         @keyframes g1{0%,100%{text-shadow:5px 0 var(--g),-5px 0 var(--p)}25%{text-shadow:-5px 0 var(--g),5px 0 var(--p)}50%{text-shadow:10px 0 var(--p),-10px 0 var(--g)}}
         
-        /* Terminal Central */
-        .term{background:rgba(0,0,0,0.95);border:3px solid var(--g);padding:30px;border-radius:15px;max-width:90%;text-align:center;box-shadow:0 0 40px var(--g);z-index:5;max-width:650px}
+        /* Terminal Central (Visibilité MAX) */
+        .term{background:rgba(0,0,0,0.85);border:3px solid var(--g);padding:30px;border-radius:15px;max-width:90%;text-align:center;box-shadow:0 0 40px var(--g);z-index:5;max-width:650px}
         
-        /* Boutons */
-        .btn{background:transparent;border:3px solid var(--g);color:var(--g);padding:15px 40px;font-size:1.3rem;margin:10px;cursor:pointer;transition:.4s;box-shadow:0 0 20px var(--g);font-weight:900}
+        /* Boutons (Très néon) */
+        .btn{background:transparent;border:3px solid var(--g);color:var(--g);padding:15px 40px;font-size:1.3rem;margin:10px;cursor:pointer;transition:.4s;box-shadow:0 0 20px var(--g), 0 0 30px var(--g);font-weight:900}
         .btn:hover{background:var(--g);color:#000;transform:scale(1.05)}
-        .flag{background:var(--r)!important;border-color:var(--r)!important;box-shadow:0 0 40px var(--r)!important}
+        .flag{background:var(--r)!important;border-color:var(--r)!important;box-shadow:0 0 40px var(--r), 0 0 50px var(--r)!important}
         
         /* Divers */
         .share{position:fixed;top:20px;right:20px;background:var(--p);color:#000;z-index:100;padding:10px 20px;font-size:1rem}
-        .logo{position:fixed;top:15px;left:15px;width:60px;height:60px;background:url('https://pbs.twimg.com/profile_images/1991343934484688896/vEnlNJUF.jpg') center/contain no-repeat;border-radius:50%;box-shadow:0 0 30px var(--g);z-index:100}
-        #status{font-size:1.1rem;margin:10px;color:var(--p)}
+        .logo{position:fixed;top:15px;left:15px;width:60px;height:60px;background:url('https://pbs.twimg.com/profile_images/1991343934484688896/vEnlNJUF.jpg') center/contain no-repeat;border-radius:50%;box-shadow:0 0 30px var(--p);z-index:100}
+        #status{font-size:1.1rem;margin:10px;color:var(--p);text-shadow:0 0 5px var(--p)}
         .form{display:none;background:rgba(0,255,65,.1);border:2px solid var(--g);padding:20px;border-radius:15px;max-width:400px;margin:20px auto;box-shadow:0 0 30px var(--g)}
-        textarea{width:100%;background:rgba(0,0,0,.5);color:var(--g);border:1px solid var(--g);padding:10px;font-family:inherit;box-sizing:border-box}
+        textarea{width:100%;background:rgba(0,0,0,.5);color:var(--w);border:1px solid var(--g);padding:10px;font-family:inherit;box-sizing:border-box}
         footer{position:fixed;bottom:10px;width:100%;text-align:center;opacity:.8}
         a{color:var(--p);text-decoration:none}
-        .message{font-size:1.1rem;margin:15px 0;color:#fff;text-shadow:0 0 5px rgba(0,0,0,.5)}
+        .message{font-size:1.1rem;margin:15px 0;color:var(--w);text-shadow:0 0 5px rgba(255,255,255,.5)}
   </style>
 </head>
 <body>
@@ -59,6 +78,25 @@ html_content_final_stable_v3 = """<!DOCTYPE html>
     <button class="btn share" onclick="share()">SHARE ON X</button>
 
     <div class="scan"></div>
+    
+    <script>
+        // Points flottants pour l'ambiance visuelle
+        for(let i=0; i<100; i++){
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + 'vw';
+            star.style.top = Math.random() * 100 + 'vh';
+            star.style.animationDelay = Math.random() * 10 + 's';
+            document.body.appendChild(star);
+        }
+    </script>
+
+    <div class="degen-sign">ANON MASK</div>
+    <div class="degen-sign">REVOLUTION</div>
+    <div class="degen-sign">ANTI-CENSORSHIP</div>
+    <div class="degen-sign">BURN THE SYSTEM</div>
+    <div class="degen-sign">DEGEN UTILITY</div>
+
 
     <div class="term">
         <div class="glitch">NOT MY WALLET</div>
@@ -88,10 +126,10 @@ html_content_final_stable_v3 = """<!DOCTYPE html>
     <footer><a href="https://x.com/notmywallet_io" target="_blank">@notmywallet_io • PUBLIC GRAVEYARD • #NotMyWallet 🔪</a></footer>
 
     <script>
-        const SOL_PROGRAM="9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin"; // Placeholder
-        const SOL_TREASURY="zeEcyxGeM297wVYXKRjkKFdG1K6EAYwn3CjbajEnYGi"; // Graveyard Address
-        const BASE_TREASURY="0xb454640B8AA2a7974586c121c200541118d01982"; // Graveyard Address
-        const BASE_CHAIN_ID=8453; // Base Mainnet ID
+        const SOL_PROGRAM="9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin"; 
+        const SOL_TREASURY="zeEcyxGeM297wVYXKRjkKFdG1K6EAYwn3CjbajEnYGi"; 
+        const BASE_TREASURY="0xb454640B8AA2a7974586c121c200541118d01982"; 
+        const BASE_CHAIN_ID=8453; 
         let sol=false,acc=null;
 
         async function connect(){
@@ -133,7 +171,6 @@ html_content_final_stable_v3 = """<!DOCTYPE html>
             document.getElementById("status").innerHTML="> ⚠️ Awaiting transaction confirmation in wallet...";
             
             if(sol){
-                // *** FIX SOLANA : Transfert simple de 0.01 SOL (Testé et fonctionnel) ***
                 const conn=new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
                 const lamportsToSend = 10000000; // 0.01 SOL
 
@@ -155,7 +192,6 @@ html_content_final_stable_v3 = """<!DOCTYPE html>
                 }
 
             }else{
-                // BASE/EVM Logic
                 const w=new Web3(window.ethereum);
                 const abi=[{"inputs":[{"internalType":"string","name":"_reason","type":"string"}],"name":"flag","outputs":[],"stateMutability":"payable","type":"function"}];
                 const ctr=new w.eth.Contract(abi,BASE_TREASURY);
@@ -177,18 +213,14 @@ html_content_final_stable_v3 = """<!DOCTYPE html>
 
 html_file_name_final = "index.html"
 with open(html_file_name_final, "w", encoding="utf-8") as f:
-    f.write(html_content_final_stable_v3)
+    f.write(html_content_final_stable_v6)
 
 try:
     files.download(html_file_name_final)
-    print("Le téléchargement du fichier 'index.html' (Degen Max - Stable V3) a été initié.")
-    print("\n--- UTILISATION FINALE ---")
+    print("Le téléchargement du fichier 'index.html' (Degen Max - Stable V6) a été initié.")
+    print("\n--- ÉTAPE FINALE : UPLOAD SUR GITHUB/VERCEL ---")
     print("1. Téléchargez ce fichier 'index.html'.")
-    print("2. Uploadez-le sur Vercel ou GitHub, en remplaçant l'ancien.")
-    print("3. La lisibilité et la connexion sont maintenant garanties.")
-except Exception as e:
-    print(f"Le téléchargement automatique a échoué ({e}).")
-    print("1. Téléchargez ce fichier 'index.html'.")
-    print("2. Uploadez-le sur Vercel (ou GitHub 🐙) et testez la connexion du portefeuille.")
+    print("2. Uploadez-le sur Vercel/GitHub en remplacement de l'ancien.")
+    print("3. La version avec les couleurs et les signes est maintenant stable.")
 except Exception as e:
     print(f"Le téléchargement automatique a échoué ({e}).")
