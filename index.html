@@ -5,11 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NotMyWallet – Flag Your Hacked Wallet</title>
 
-  <!-- Solana / Web3 -->
   <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/web3@4.2.0/dist/web3.min.js"></script>
 
-  <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -132,7 +130,8 @@
       width:56px;
       height:56px;
       border-radius:999px;
-      background:url("https://cdn.yoursite.com/notmywallet-logo.png") center/cover no-repeat;
+      /* IMAGE CORRIGEE : LOGO PEPE */
+      background:url("https://i.imgur.com/vEnlNJU.jpg") center/cover no-repeat;
       box-shadow:0 0 26px rgba(34,197,94,.9);
       border:1px solid rgba(34,197,94,.85);
       flex-shrink:0;
@@ -483,52 +482,6 @@
       gap:3px;
     }
 
-    .table-wrapper{
-      margin-top:8px;
-      border-radius:var(--radius-lg);
-      border:1px solid rgba(31,41,55,.95);
-      background:rgba(3,7,18,.98);
-      max-height:220px;
-      overflow:auto;
-    }
-    table{
-      width:100%;
-      border-collapse:collapse;
-      font-size:.8rem;
-    }
-    thead{
-      background:rgba(15,23,42,.98);
-      position:sticky;
-      top:0;
-      z-index:1;
-    }
-    th, td{
-      padding:6px 8px;
-      border-bottom:1px solid rgba(31,41,55,.9);
-      text-align:left;
-      white-space:nowrap;
-    }
-    th{
-      font-weight:600;
-      color:#9ca3af;
-      text-transform:uppercase;
-      letter-spacing:.11em;
-      font-size:.72rem;
-    }
-    tbody tr:nth-child(even){
-      background:rgba(15,23,42,.92);
-    }
-    .addr-cell{
-      font-family:"Space Grotesk",monospace;
-      font-size:.78rem;
-    }
-    .reason-cell{
-      max-width:220px;
-      white-space:nowrap;
-      text-overflow:ellipsis;
-      overflow:hidden;
-    }
-
     .bottom-footer{
       margin-top:16px;
       font-size:.78rem;
@@ -643,7 +596,7 @@
       </div>
       <div class="hero-right">
         <img
-          src="https://cdn.yoursite.com/notmywallet-hero-pepe.jpg"
+          src="https://i.imgur.com/3vZfK5L.png"
           alt="Cyber degen burning a hacked wallet"
           class="pepe"
         />
@@ -652,7 +605,6 @@
     </section>
 
     <div class="content-grid">
-      <!-- FLAG PANEL -->
       <section class="panel">
         <div class="panel-title">
           Burn your hacked wallet
@@ -661,7 +613,7 @@
         <p class="panel-sub">
           Connect the compromised address and pay the burn-fee.
           On Solana we attach a <strong>Memo</strong>; on Base we hit a
-          <strong>registry smart-contract</strong>. Both can be indexed by bots / explorers.
+          <strong>registry smart-contract</strong>.
         </p>
 
         <div id="status" class="status">
@@ -688,152 +640,48 @@
             <div>Address: <span id="addr">—</span></div>
           </div>
           <div>
-            <label for="reason" style="font-size: 0.8rem; color: var(--muted);"
-              >Reason (public text, on-chain / logs)</label
-            >
             <textarea
               id="reason"
               placeholder="hacked, drained after phishing, fake bot, CEX leak, dusting, etc."
             ></textarea>
           </div>
           <p class="fee-line">
-            Fee: <strong>0.01&nbsp;SOL</strong> on Solana →
-            <code>zeEcyxGeM…</code><br />
-            or <strong>0.001&nbsp;ETH</strong> on Base → registry + treasury
+            Fee: <strong>0.001&nbsp;SOL</strong> on Solana or <strong>0.001&nbsp;ETH</strong> on Base
           </p>
         </div>
       </section>
 
-      <!-- EXPLORER PANEL -->
       <section class="panel">
-        <div class="panel-title">
-          NMW Explorer
-          <span class="panel-tag">On-chain registry</span>
-        </div>
-        <p class="panel-sub">
-          View the latest wallets that publicly screamed
-          <strong>“Not my wallet anymore”</strong> on Base. This is your
-          “do not send funds here” list.
-        </p>
-
-        <div class="btn-row" style="margin-top:2px;">
-          <button class="btn" style="flex:0 0 auto; padding:8px 12px; font-size:.78rem;"
-                  onclick="loadExplorer()">
-            Refresh list
-          </button>
-          <div id="flagsCountBadge" style="font-size:.78rem; color:var(--muted);">
-            Total flags: —
-          </div>
-        </div>
-
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Wallet</th>
-                <th>Flagger</th>
-                <th>Reason</th>
-                <th>Time</th>
-              </tr>
-            </thead>
-            <tbody id="explorerBody">
-              <tr>
-                <td colspan="5" style="text-align:center; padding:10px;">
-                  Connect MetaMask on Base and click “Refresh list”.
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
         <div class="info-card">
           <h3>How it works</h3>
           <ul>
-            <li>Every EVM flag → entry in the <code>NotMyWalletRegistry</code> contract.</li>
-            <li>Stored: compromised wallet, flagger, timestamp, reason, chainId.</li>
-            <li>Front-end reads <code>flagsCount</code> + <code>getFlags(offset,limit)</code>.</li>
-            <li>Solana side uses a 0.01 SOL transfer + Memo <code>NMW_FLAG|reason</code>.</li>
+            <li>You connect the compromised address (no custody, no login).</li>
+            <li>You send a small fee from that wallet to the treasury.</li>
+            <li>That transaction creates a <strong>public marker</strong> on-chain.</li>
+            <li>Indexers/Bots can read it and treat the address as <strong>toxic</strong>.</li>
           </ul>
         </div>
       </section>
     </div>
 
-    <section class="bottom-footer">
-      <div>
-        Built for the people who got rekt and still want to protect the next ones —
-        <a href="https://x.com/notmywallet_io" target="_blank">@notmywallet_io</a>
-        • #NotMyWallet
-      </div>
+    <div class="bottom-footer">
+      Built for the people who got rekt — #NotMyWallet  
       <div class="social-links">
-        <a href="https://x.com/notmywallet_io" target="_blank">
-          <span>𝕏</span> Follow on X
-        </a>
-        <a href="https://github.com/notmywallet" target="_blank">
-          <span>🐙</span> View on GitHub
-        </a>
+        <a href="https://x.com/notmywallet_io" target="_blank">𝕏 Follow</a>
+        <a href="https://github.com/notmywallet" target="_blank">🐙 GitHub</a>
       </div>
-    </section>
+    </div>
   </div>
 
   <script>
-    // -------- CONSTANTES ----------
     const MEMO_PROGRAM_ID = "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
-    const SOL_TREASURY   = "zeEcyxGeM297wVYXKRjkKFdG1K6EAYwn3CjbajEnYGi";
+    const SOL_TREASURY    = "zeEcyxGeM297wVYXKRjkKFdG1K6EAYwn3CjbajEnYGi";
+    const BASE_TREASURY   = "0xb454640B8AA2a7974586c121c200541118d01982";
 
-    // ⚠️ REMPLACE PAR L’ADRESSE DU CONTRAT SUR BASE
-    const BASE_REGISTRY_ADDRESS = "0x0000000000000000000000000000000000000000";
-
-    // ABI minimal du registry EVM
-    const REGISTRY_ABI = [
-      {
-        "inputs":[
-          {"internalType":"address","name":"wallet","type":"address"},
-          {"internalType":"string","name":"reason","type":"string"}
-        ],
-        "name":"flag",
-        "outputs":[],
-        "stateMutability":"payable",
-        "type":"function"
-      },
-      {
-        "inputs":[
-          {"internalType":"uint256","name":"offset","type":"uint256"},
-          {"internalType":"uint256","name":"limit","type":"uint256"}
-        ],
-        "name":"getFlags",
-        "outputs":[
-          {
-            "components":[
-              {"internalType":"address","name":"wallet","type":"address"},
-              {"internalType":"address","name":"flagger","type":"address"},
-              {"internalType":"uint64","name":"timestamp","type":"uint64"},
-              {"internalType":"string","name":"reason","type":"string"},
-              {"internalType":"uint256","name":"chainId","type":"uint256"}
-            ],
-            "internalType":"struct NotMyWalletRegistry.Flag[]",
-            "name":"",
-            "type":"tuple[]"
-          }
-        ],
-        "stateMutability":"view",
-        "type":"function"
-      },
-      {
-        "inputs":[],
-        "name":"flagsCount",
-        "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-        "stateMutability":"view",
-        "type":"function"
-      }
-    ];
-
-    // -------- FIRE BACKGROUND ----------
+    // BACKGROUND FIRE ANIMATION
     const fireCanvas = document.getElementById("fire");
     const fireCtx = fireCanvas.getContext("2d");
     let particles = [];
-    const PARTICLE_COUNT = 200;
-
     function resizeCanvas() {
       fireCanvas.width = window.innerWidth;
       fireCanvas.height = window.innerHeight;
@@ -861,8 +709,7 @@
         fireCtx.fillRect(this.x,this.y,this.size,this.size*8);
       };
     }
-
-    for (var i=0;i<PARTICLE_COUNT;i++) particles.push(new FlameParticle());
+    for (var i=0;i<180;i++) particles.push(new FlameParticle());
     (function animateFire(){
       fireCtx.fillStyle = "rgba(2,6,23,0.28)";
       fireCtx.fillRect(0,0,fireCanvas.width,fireCanvas.height);
@@ -870,17 +717,14 @@
       requestAnimationFrame(animateFire);
     })();
 
-    // -------- WALLET LOGIC ----------
+    // WALLET LOGIC
     var isSolana = false;
     var account = null;
-
     var statusEl = document.getElementById("status");
     var flagBtn  = document.getElementById("flagBtn");
     var formEl   = document.getElementById("form");
     var chainEl  = document.getElementById("chain");
     var addrEl   = document.getElementById("addr");
-    var explorerBody = document.getElementById("explorerBody");
-    var flagsCountBadge = document.getElementById("flagsCountBadge");
 
     function setStatus(html){ statusEl.innerHTML = html; }
     function enableFlagButton(){
@@ -888,31 +732,28 @@
       flagBtn.classList.remove("disabled");
     }
 
-    function connectWallet(){
-      (async function(){
-        try {
-          if (window.solana && window.solana.isPhantom) {
-            await window.solana.connect();
-            isSolana = true;
-            account = window.solana.publicKey.toString();
-            showConnected("Solana");
-            return;
-          }
-          if (window.ethereum) {
-            var web3 = new Web3(window.ethereum);
-            await window.ethereum.request({ method:"eth_requestAccounts" });
-            var accounts = await web3.eth.getAccounts();
-            account = accounts[0];
-            isSolana = false;
-            showConnected("Base");
-            return;
-          }
-          alert("You need Phantom (Solana) or MetaMask (EVM) to use NotMyWallet.");
-        } catch(e){
-          console.error(e);
-          setStatus("&gt; Connection cancelled or failed.");
+    async function connectWallet(){
+      try {
+        if (window.solana && window.solana.isPhantom) {
+          await window.solana.connect();
+          isSolana = true;
+          account = window.solana.publicKey.toString();
+          showConnected("Solana");
+          return;
         }
-      })();
+        if (window.ethereum) {
+          var web3 = new Web3(window.ethereum);
+          await window.ethereum.request({ method:"eth_requestAccounts" });
+          var accounts = await web3.eth.getAccounts();
+          account = accounts[0];
+          isSolana = false;
+          showConnected("Base");
+          return;
+        }
+        alert("Install Phantom or MetaMask.");
+      } catch(e){
+        setStatus("&gt; Connection cancelled.");
+      }
     }
 
     function showConnected(chainLabel){
@@ -921,161 +762,92 @@
       addrEl.textContent = short;
       formEl.style.display = "flex";
       enableFlagButton();
-      setStatus("&gt; Connected with <span>" + chainLabel + "</span> — address " + short);
+      setStatus("&gt; Connected with <span>" + chainLabel + "</span> — " + short);
     }
 
-    function flagCompromised(){
+    async function flagCompromised(){
       if (!account) return;
-      var rawReason = document.getElementById("reason").value.trim() || "hacked";
-      var reason = rawReason.slice(0, 160);
+      var reason = document.getElementById("reason").value.trim() || "hacked";
       setStatus("&gt; Sending burn-fee transaction...");
-      if (isSolana) {
-        flagSolana(reason);
-      } else {
-        flagBase(reason);
+      if (isSolana) { flagSolana(reason); } else { flagBase(reason); }
+    }
+
+    async function flagSolana(reason){
+      try{
+        // FIX SOLANA: Connexion plus fiable
+        var connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com", "confirmed");
+        var fromPubkey = window.solana.publicKey;
+        var toPubkey   = new solanaWeb3.PublicKey(SOL_TREASURY);
+
+        // 1. Transfert (0.001 SOL = 1000000 Lamports) - Frais réduits
+        var transferIx = solanaWeb3.SystemProgram.transfer({
+          fromPubkey: fromPubkey,
+          toPubkey: toPubkey,
+          lamports: 1000000
+        });
+
+        // 2. Memo
+        var memoData = new TextEncoder().encode("NMW_FLAG|" + reason);
+        var memoIx = new solanaWeb3.TransactionInstruction({
+          keys: [],
+          programId: new solanaWeb3.PublicKey(MEMO_PROGRAM_ID),
+          data: memoData
+        });
+
+        var tx = new solanaWeb3.Transaction().add(transferIx, memoIx);
+        tx.feePayer = fromPubkey;
+
+        // 3. Blockhash
+        var bh = await connection.getLatestBlockhash();
+        tx.recentBlockhash = bh.blockhash;
+
+        // 4. Sign & Send via Phantom
+        var { signature } = await window.solana.signAndSendTransaction(tx);
+        
+        setStatus("&gt; Transaction sent. Confirming...");
+        await connection.confirmTransaction(signature, "confirmed");
+
+        setStatus(
+          '&gt; BURNED on Solana 🔥<br>' +
+          '<a href="https://solscan.io/tx/' + signature + '" target="_blank" style="color:#fff">View on Solscan</a>'
+        );
+      } catch(e){
+        console.error(e);
+        setStatus("&gt; Failed on Solana – check balance (>0.002 SOL required) and network.");
       }
     }
 
-    function flagSolana(reason){
-      (async function(){
-        try{
-          var connection = new solanaWeb3.Connection(
-            "https://api.mainnet-beta.solana.com",
-            "confirmed"
-          );
+    async function flagBase(reason){
+      try{
+        var web3 = new Web3(window.ethereum);
+        var value = web3.utils.toWei("0.001","ether");
+        
+        // Conversion message en Hex pour le champ 'data'
+        var hexData = web3.utils.utf8ToHex("NMW_FLAG:" + reason);
 
-          var fromPubkey = window.solana.publicKey;
-          var toPubkey   = new solanaWeb3.PublicKey(SOL_TREASURY);
+        var txHash = await window.ethereum.request({
+            method: 'eth_sendTransaction',
+            params: [{
+                from: account,
+                to: BASE_TREASURY,
+                value: value,
+                data: hexData
+            }]
+        });
 
-          var transferIx = solanaWeb3.SystemProgram.transfer({
-            fromPubkey: fromPubkey,
-            toPubkey: toPubkey,
-            lamports: 10000000
-          });
-
-          var memoData = new TextEncoder().encode("NMW_FLAG|" + reason);
-          var memoIx = new solanaWeb3.TransactionInstruction({
-            keys: [],
-            programId: new solanaWeb3.PublicKey(MEMO_PROGRAM_ID),
-            data: memoData
-          });
-
-          var tx = new solanaWeb3.Transaction().add(transferIx, memoIx);
-          tx.feePayer = fromPubkey;
-
-          var bh = await connection.getLatestBlockhash("finalized");
-          tx.recentBlockhash = bh.blockhash;
-
-          var signedTx = await window.solana.signTransaction(tx);
-          var sig = await connection.sendRawTransaction(signedTx.serialize());
-          await connection.confirmTransaction(
-            { signature: sig, blockhash: bh.blockhash, lastValidBlockHeight: bh.lastValidBlockHeight },
-            "confirmed"
-          );
-
-          setStatus(
-            '&gt; BURNED on Solana 🔥<br>' +
-            '<a href="https://solscan.io/tx/' + sig + '" target="_blank">View on Solscan</a>'
-          );
-        } catch(e){
-          console.error(e);
-          setStatus("&gt; Failed on Solana – check balance and network, then try again.");
-        }
-      })();
-    }
-
-    function flagBase(reason){
-      (async function(){
-        try{
-          if (!window.ethereum) {
-            alert("MetaMask (or EVM wallet) is required on Base.");
-            return;
-          }
-          var web3 = new Web3(window.ethereum);
-          var registry = new web3.eth.Contract(REGISTRY_ABI, BASE_REGISTRY_ADDRESS);
-
-          var value = web3.utils.toWei("0.001","ether");
-
-          var tx = await registry.methods.flag(account, reason).send({
-            from: account,
-            value: value
-          });
-
-          var hash = tx.transactionHash || tx;
-          setStatus(
-            '&gt; BURNED on Base 🔥<br>' +
-            '<a href="https://basescan.org/tx/' + hash + '" target="_blank">View on Basescan</a>'
-          );
-
-          loadExplorer();
-        } catch(e){
-          console.error(e);
-          setStatus("&gt; Failed on Base – check gas, network (Base) & balance.");
-        }
-      })();
-    }
-
-    function loadExplorer(){
-      (async function(){
-        try{
-          if (!window.ethereum) {
-            explorerBody.innerHTML =
-              '<tr><td colspan="5" style="text-align:center; padding:10px;">No EVM provider found. Open with MetaMask on Base.</td></tr>';
-            return;
-          }
-          var web3 = new Web3(window.ethereum);
-          var registry = new web3.eth.Contract(REGISTRY_ABI, BASE_REGISTRY_ADDRESS);
-
-          var count = await registry.methods.flagsCount().call();
-          flagsCountBadge.textContent = "Total flags: " + count;
-
-          var LIMIT = 30;
-          var offset = 0;
-          if (parseInt(count,10) > LIMIT) {
-            offset = parseInt(count,10) - LIMIT;
-          }
-          var flags = await registry.methods.getFlags(offset, LIMIT).call();
-
-          if (!flags || !flags.length){
-            explorerBody.innerHTML =
-              '<tr><td colspan="5" style="text-align:center; padding:10px;">No flags yet on Base.</td></tr>';
-            return;
-          }
-
-          var html = "";
-          for (var i = 0; i < flags.length; i++){
-            var f = flags[i];
-            var idx = offset + i + 1;
-            var wShort = f.wallet.slice(0,6) + "…" + f.wallet.slice(-4);
-            var flShort = f.flagger.slice(0,6) + "…" + f.flagger.slice(-4);
-            var date = new Date(parseInt(f.timestamp,10) * 1000);
-            var iso = date.toISOString().slice(0,16).replace("T"," ");
-
-            var safeReason = (f.reason || "").replace(/"/g,"&quot;");
-
-            html +=
-              "<tr>" +
-                "<td>" + idx + "</td>" +
-                '<td class="addr-cell">' + wShort + "</td>" +
-                '<td class="addr-cell">' + flShort + "</td>" +
-                '<td class="reason-cell" title="' + safeReason + '">' + f.reason + "</td>" +
-                "<td>" + iso + "</td>" +
-              "</tr>";
-          }
-          explorerBody.innerHTML = html;
-        } catch(e){
-          console.error(e);
-          explorerBody.innerHTML =
-            '<tr><td colspan="5" style="text-align:center; padding:10px;">Failed to load flags (check contract address & network).</td></tr>';
-        }
-      })();
+        setStatus(
+          '&gt; BURNED on Base 🔥<br>' +
+          '<a href="https://basescan.org/tx/' + txHash + '" target="_blank" style="color:#fff">View on Basescan</a>'
+        );
+      } catch(e){
+        console.error(e);
+        setStatus("&gt; Failed on Base – check gas & balance.");
+      }
     }
 
     function share(){
-      var text =
-        "Just flagged my hacked wallet as dead with @notmywallet_io – on-chain degen privacy. #NotMyWallet";
-      var url = "https://notmywallet.xyz";
-      var xUrl = "https://x.com/intent/tweet?text=" + encodeURIComponent(text + " " + url);
+      var text = "Just flagged my hacked wallet as dead with @notmywallet_io";
+      var xUrl = "https://x.com/intent/tweet?text=" + encodeURIComponent(text);
       window.open(xUrl,"_blank");
     }
   </script>
