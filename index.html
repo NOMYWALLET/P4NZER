@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NotMyWallet – Burn Forever</title>
+  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+  <script src="https://unpkg.com/@coral-xyz/anchor@0.30.1/dist/browser/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/web3@4.2.0/dist/web3.min.js"></script>
+  <style>
+    :root{--g:#00ff41;--p:#ff00ff;--d:#000}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--d);color:var(--g);font-family:'Orbitron',monospace;overflow:hidden;height:100vh;position:relative}
+    .glitch{font-size:clamp(3rem,10vw,9rem);font-weight:900;text-align:center;position:absolute;top:10%;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,var(--g),var(--p),var(--g));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:glitch1 2.5s infinite}
+    .glitch::before,.glitch::after{content:'NotMyWallet';position:absolute;top:0;left:0;width:100%;height:100%}
+    .glitch::before{animation:glitch2 0.4s infinite;clip-path:polygon(0 0,100% 0,100% 35%,0 35%);transform:translate(-2px)}
+    .glitch::after{animation:glitch3 0.4s infinite;clip-path:polygon(0 65%,100% 65%,100% 100%,0 100%);transform:translate(2px)}
+    @keyframes glitch1{0%,100%{text-shadow:5px 0 var(--g),-5px 0 var(--p)}25%{text-shadow:-5px 0 var(--g),5px 0 var(--p)}50%{text-shadow:10px 0 var(--p),-10px 0 var(--g)}}
+    @keyframes glitch2{0%,100%{transform:translate(-2px)}50%{transform:translate(2px)}
+    @keyframes glitch3{0%,100%{transform:translate(2px)}50%{transform:translate(-2px)}
+    .pepe{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:clamp(300px,70vw,600px);z-index:2;animation:float 6s ease-in-out infinite}
+    @keyframes float{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,-55%)}
+    canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1}
+    .terminal{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);background:rgba(0,255,65,0.08);border:3px solid var(--g);padding:30px;border-radius:15px;max-width:90%;text-align:center;box-shadow:0 0 40px var(--g);z-index:5}
+    .btn{background:transparent;border:3px solid var(--g);color:var(--g);padding:18px 50px;font-size:1.8rem;margin:15px;cursor:pointer;transition:.4s;box-shadow:0 0 20px var(--g);font-weight:900}
+    .btn:hover{background:var(--g);color:#000;transform:scale(1.1)}
+    .flag{background:#ff0040!important;border-color:#ff0040!important;box-shadow:0 0 40px #ff0040!important}
+    .share{position:fixed;top:20px;right:20px;background:var(--p);color:#000;z-index:100}
+    .logo{position:fixed;top:15px;left:15px;width:90px;height:90px;background:url('https://pbs.twimg.com/profile_images/1991343934484688896/vEnlNJUF.jpg') center/contain no-repeat;border-radius:50%;box-shadow:0 0 30px var(--g);z-index:100}
+    #status{font-size:1.4rem;margin:20px;color:#f0f}
+    .form{display:none;background:rgba(0,255,65,.1);border:2px solid var(--g);padding:25px;border-radius:15px;max-width:500px;margin:20px auto;box-shadow:0 0 30px var(--g)}
+    textarea{width:100%;background:transparent;color:var(--g);border:1px solid var(--g);padding:15px;font-family:inherit}
+    footer{position:fixed;bottom:10px;width:100%;text-align:center;opacity:.8}
+    a{color:var(--p);text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="logo"></div>
+  <button class="btn share" onclick="share()">SHARE ON X</button>
+  <div class="glitch">NotMyWallet</div>
+  <img src="https://i.imgur.com/3vZfK5L.png" class="pepe" alt="Pepe burning wallet">
+  <canvas id="fire"></canvas>
+
+  <div class="terminal">
+    <div id="status">> Connect compromised wallet – burn forever</div>
+    <button class="btn" onclick="connect()">CONNECT WALLET</button>
+    <button class="btn flag" id="flagBtn" style="display:none" onclick="flag()">FLAG AS COMPROMISED</button>
+    <div class="form" id="form">
+      <h3>Chain: <span id="chain">???</span></h3>
+      <p>Address: <span id="addr"></span></p>
+      <textarea id="reason" placeholder="Reason (public - optional)"></textarea>
+      <small>Fee: 0.01 SOL (Solana) or 0.001 ETH (Base) → treasury</small>
+    </div>
+  </div>
+
+  <footer><a href="https://x.com/notmywallet_io" target="_blank">@notmywallet_io • Join the graveyard • #NotMyWallet</a></footer>
+
+  <script>
+    // Fire particles
+    const canvas=document.getElementById('fire'),ctx=canvas.getContext('2d');
+    canvas.width=innerWidth;canvas.height=innerHeight;
+    const particles=[],count=200;
+    class P{constructor(){this.x=Math.random()*canvas.width;this.y=canvas.height;this.s=1+Math.random()*4;this.vy=-2-Math.random()*4;this.color=`hsl(${Math.random()*60},100%,50%)`}
+    update(){this.y+=this.vy;if(this.y<-10)this.y=canvas.height;this.x+=Math.sin(Date.now()/500)*2}
+    draw(){ctx.fillStyle=this.color;ctx.globalAlpha=0.8;ctx.fillRect(this.x,this.y,this.s,this.s*10)}}
+    for(let i=0;i<count;i++)particles.push(new P());
+    function anim(){ctx.fillStyle='rgba(0,0,0,0.05)';ctx.fillRect(0,0,canvas.width,canvas.height);particles.forEach(p=>{p.update();p.draw()});requestAnimationFrame(anim)};anim();
+
+    // MAINNET + REAL FEES
+    const SOLANA_PROGRAM = "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin";
+    const SOLANA_TREASURY = "zeEcyxGeM297wVYXKRjkKFdG1K6EAYwn3CjbajEnYGi";
+    const BASE_TREASURY = "0xb454640B8AA2a7974586c121c200541118d01982";
+    let isSolana=false,account=null;
+
+    async function connect(){
+      if(window.solana?.isPhantom){await window.solana.connect();isSolana=true;account=window.solana.publicKey.toString();show("Solana");return}
+      if(window.ethereum){const web3=new Web3(window.ethereum);await window.ethereum.request({method:'eth_requestAccounts'});account=(await web3.eth.getAccounts())[0];isSolana=false;show("Base");return}
+      alert("Install Phantom or MetaMask!");
+    }
+    function show(c){document.getElementById("chain").innerText=c;document.getElementById("addr").innerText=account.slice(0,10)+"..."+account.slice(-4);document.getElementById("form").style.display="block";document.getElementById("flagBtn").style.display="block";document.getElementById("status").innerHTML="> Connected on "+c}
+
+    async function flag(){
+      const reason=document.getElementById("reason").value||"hacked";
+      document.getElementById("status").innerHTML="> Sending transaction...";
+      if(isSolana){
+        const connection=new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
+        const provider=new anchor.AnchorProvider(connection,window.solana,{});
+        const idl=await anchor.Program.fetchIdl(SOLANA_PROGRAM,provider);
+        const program=new anchor.Program(idl,SOLANA_PROGRAM,provider);
+        const [pda]=anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("compromised"),window.solana.publicKey.toBuffer()],program.programId);
+        try{
+          const sig=await program.methods.flag(reason).accounts({user:window.solana.publicKey,compromised:pda,systemProgram:anchor.web3.SystemProgram.programId}).rpc();
+          // 0.01 SOL fee to treasury
+          await connection.transfer(window.solana.getAccount(), new solanaWeb3.PublicKey(SOLANA_TREASURY), 10000000);
+          document.getElementById("status").innerHTML=`> SUCCESS – Burned!<br><a href="https://solscan.io/tx/${sig}" target="_blank" style="color:#f0f">View on Solscan</a>`;
+        }catch(e){document.getElementById("status").innerHTML="> Tx failed – check balance"}
+      }else{
+        const web3=new Web3(window.ethereum);
+        const ABI=[{"inputs":[{"internalType":"string","name":"_reason","type":"string"}],"name":"flag","outputs":[],"stateMutability":"payable","type":"function"}];
+        const contract=new web3.eth.Contract(ABI,BASE_TREASURY);
+        try{
+          const tx=await contract.methods.flag(reason).send({from:account,value:web3.utils.toWei("0.001","ether")});
+          document.getElementById("status").innerHTML=`> SUCCESS – Burned!<br><a href="https://basescan.org/tx/${tx.transactionHash}" target="_blank" style="color:#f0f">View on Basescan</a>`;
+        }catch(e){document.getElementById("status").innerHTML="> Tx failed – check balance"}
+      }
+    }
+    function share(){window.open("https://x.com/intent/tweet?text="+encodeURIComponent("Just burned my hacked wallet forever with @notmywallet_io – degen privacy wins https://notmywallet.xyz #NotMyWallet"))}
+  </script>
+</body>
+</html>
