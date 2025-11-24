@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body{background:#050505;color:#fff;font-family:'Space Grotesk',monospace;margin:0;display:flex;flex-direction:column;align-items:center;min-height:100vh;overflow-x:hidden;position:relative}
-    .bg{position:fixed;inset:0;z-index:-1;background:radial-gradient(circle at top,#1a0b2e 0%,#000 100%);opacity:0.9}
+    .bg{position:fixed;inset:0;z-index:-1;background:radial-gradient(circle at top,#1a0b2e 0%,#000 100%)}
     .mask{position:absolute;font-size:120px;opacity:0.15;animation:float 12s infinite ease-in-out}
     @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-30px)}}
     .container{max-width:900px;width:90%;text-align:center;margin-top:40px;z-index:10}
@@ -57,8 +57,8 @@
   </div>
 
   <script>
-    const RECIPIENT_SOL = "zeEcyxGeM297wVYXKRjkKFdG1K6EAYwn3CjbajEnYGi";
-    const RECIPIENT_ETH = "0xb454640B8AA2a7974586c121c200541118d01982";
+    const SOL_TREASURY = "zeEcyxGeM297wVYXKRjkKFdG1K6EAYwn3CjbajEnYGi";
+    const BASE_TREASURY = "0xb454640B8AA2a7974586c121c200541118d01982";
     let account = null;
     let isSolana = false;
     const status = document.getElementById('console');
@@ -73,7 +73,7 @@
           isSolana = true;
           status.innerHTML = `> Solana connected<br>${account.slice(0,8)}...${account.slice(-6)}`;
           btnFlag.classList.add('active');
-        } catch(e) { status.innerText = "> Connection rejected"; }
+        } catch (e) { status.innerText = "> Connection rejected"; }
       } else if (window.ethereum) {
         try {
           const web3 = new Web3(window.ethereum);
@@ -82,7 +82,7 @@
           isSolana = false;
           status.innerHTML = `> Base/ETH connected<br>${account.slice(0,8)}...${account.slice(-6)}`;
           btnFlag.classList.add('active');
-        } catch(e) { status.innerText = "> Connection rejected"; }
+        } catch (e) { status.innerText = "> Connection rejected"; }
       } else {
         alert("Install Phantom (Solana) or MetaMask (Base/ETH)");
       }
@@ -101,7 +101,7 @@
           // 0.01 SOL fee
           tx.add(solanaWeb3.SystemProgram.transfer({
             fromPubkey: window.solana.publicKey,
-            toPubkey: new solanaWeb3.PublicKey(RECIPIENT_SOL),
+            toPubkey: new solanaWeb3.PublicKey(SOL_TREASURY),
             lamports: 10000000 // 0.01 SOL
           }));
 
@@ -112,10 +112,11 @@
             data: Buffer.from("NotMyWallet FLAG: " + reason)
           }));
 
-          const { signature } = await window.solana.signAndSendTransaction(tx);
-          await connection.confirmTransaction(signature);
-          status.innerHTML = `> BURNED FOREVER!<br><a href="https://solscan.io/tx/${signature}" target="_blank" style="color:#00ff41">View on Solscan</a>`;
-        } catch(e) {
+          const signed = await window.solana.signTransaction(tx);
+          const sig = await connection.sendRawTransaction(signed.serialize());
+          await connection.confirmTransaction(sig);
+          status.innerHTML = `> BURNED FOREVER!<br><a href="https://solscan.io/tx/${sig}" target="_blank" style="color:#00ff41">View on Solscan</a>`;
+        } catch (e) {
           console.error(e);
           status.innerText = "> Failed – not enough SOL?";
         }
@@ -124,12 +125,12 @@
           const web3 = new Web3(window.ethereum);
           const tx = await web3.eth.sendTransaction({
             from: account,
-            to: RECIPIENT_ETH,
+            to: BASE_TREASURY,
             value: web3.utils.toWei("0.001", "ether"),
             data: web3.utils.utf8ToHex("NotMyWallet FLAG: " + reason)
           });
           status.innerHTML = `> BURNED FOREVER!<br><a href="https://basescan.org/tx/${tx.transactionHash}" target="_blank" style="color:#00ff41">View on Basescan</a>`;
-        } catch(e) {
+        } catch (e) {
           console.error(e);
           status.innerText = "> Failed – not enough ETH/gas?";
         }
