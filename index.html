@@ -1,226 +1,113 @@
-import os
-from google.colab import files
-
-html_content_final_stable_v6 = """<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NotMyWallet – DEGEN FLAG PROTOCOL 🔪</title>
-    
-    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
-    <script src="https://unpkg.com/@coral-xyz/anchor@0.30.1/dist/browser/index.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/web3@4.2.0/dist/web3.min.js"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=Rajdhani:wght@600&display=swap" rel="stylesheet">
-    
-    <style>
-        :root{--g:#00ff41;--p:#ff00ff;--d:#000;--r:#ff0040;--w:#fff}
-        *{margin:0;padding:0;box-sizing:border-box}
-        
-        /* BODY & BACKGROUND */
-        body{
-            background:var(--d);color:var(--g);font-family:'Orbitron',monospace;overflow:hidden;height:100vh;position:relative;
-            display:flex;flex-direction:column;align-items:center;justify-content:center;
-            background-color: #000;
-        }
-
-        /* EFFET POINTS FLOTTANTS (Simulant les signes et masques) */
-        .star{position:fixed;width:2px;height:2px;background:var(--g);box-shadow:0 0 5px var(--g);z-index:0;animation:float 10s linear infinite}
-        @keyframes float{0%{transform:translateY(0vh);opacity:0}50%{opacity:1}100%{transform:translateY(-100vh);opacity:0}}
-        
-        /* Simuler les signes Degen/Anonymous */
-        .degen-sign {
-            position:fixed;font-size:2rem;color:rgba(255,0,255,0.4); /* Violet plus visible */
-            opacity:0.2; /* Plus de visibilité */
-            pointer-events:none;
-            text-shadow:0 0 5px var(--p);
-            animation:float-glitch 12s infinite alternate ease-in-out;
-            white-space:nowrap;z-index:1;font-family:'Rajdhani',sans-serif;
-        }
-        .degen-sign:nth-child(1){top:8%;left:8%;animation-delay:0s;font-size:2.2rem}
-        .degen-sign:nth-child(2){top:22%;right:12%;animation-delay:2s;color:var(--g)}
-        .degen-sign:nth-child(3){bottom:15%;left:18%;animation-delay:4s;font-size:1.8rem}
-        .degen-sign:nth-child(4){top:45%;right:7%;animation-delay:6s;font-size:2.5rem;color:var(--g)}
-        .degen-sign:nth-child(5){bottom:8%;left:35%;animation-delay:8s;font-size:2.1rem}
-        @keyframes float-glitch{0%{transform:translate(0)}50%{transform:translate(0,-10px) rotate(-1deg)}100%{transform:translate(0)}}
-        
-        /* Effet de scan */
-        .scan{background:repeating-linear-gradient(0deg,rgba(0,0,0,.1) 0px,rgba(0,0,0,.1) 2px,transparent 2px,transparent 4px);position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;animation:s 8s linear infinite}
-        @keyframes s{0%{transform:translateY(-100%)}100%{transform:translateY(100%)}}
-        
-        /* Titre Glitch (Très visible) */
-        .glitch{font-size:clamp(3rem,8vw,6rem);font-weight:900;text-align:center;background:linear-gradient(90deg,var(--g),var(--p),var(--g));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:g1 2.5s infinite;margin-bottom:10px}
-        @keyframes g1{0%,100%{text-shadow:5px 0 var(--g),-5px 0 var(--p)}25%{text-shadow:-5px 0 var(--g),5px 0 var(--p)}50%{text-shadow:10px 0 var(--p),-10px 0 var(--g)}}
-        
-        /* Terminal Central (Visibilité MAX) */
-        .term{background:rgba(0,0,0,0.85);border:3px solid var(--g);padding:30px;border-radius:15px;max-width:90%;text-align:center;box-shadow:0 0 40px var(--g);z-index:5;max-width:650px}
-        
-        /* Boutons (Très néon) */
-        .btn{background:transparent;border:3px solid var(--g);color:var(--g);padding:15px 40px;font-size:1.3rem;margin:10px;cursor:pointer;transition:.4s;box-shadow:0 0 20px var(--g), 0 0 30px var(--g);font-weight:900}
-        .btn:hover{background:var(--g);color:#000;transform:scale(1.05)}
-        .flag{background:var(--r)!important;border-color:var(--r)!important;box-shadow:0 0 40px var(--r), 0 0 50px var(--r)!important}
-        
-        /* Divers */
-        .share{position:fixed;top:20px;right:20px;background:var(--p);color:#000;z-index:100;padding:10px 20px;font-size:1rem}
-        .logo{position:fixed;top:15px;left:15px;width:60px;height:60px;background:url('https://pbs.twimg.com/profile_images/1991343934484688896/vEnlNJUF.jpg') center/contain no-repeat;border-radius:50%;box-shadow:0 0 30px var(--p);z-index:100}
-        #status{font-size:1.1rem;margin:10px;color:var(--p);text-shadow:0 0 5px var(--p)}
-        .form{display:none;background:rgba(0,255,65,.1);border:2px solid var(--g);padding:20px;border-radius:15px;max-width:400px;margin:20px auto;box-shadow:0 0 30px var(--g)}
-        textarea{width:100%;background:rgba(0,0,0,.5);color:var(--w);border:1px solid var(--g);padding:10px;font-family:inherit;box-sizing:border-box}
-        footer{position:fixed;bottom:10px;width:100%;text-align:center;opacity:.8}
-        a{color:var(--p);text-decoration:none}
-        .message{font-size:1.1rem;margin:15px 0;color:var(--w);text-shadow:0 0 5px rgba(255,255,255,.5)}
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NotMyWallet – Burn Forever</title>
+  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+  <script src="https://unpkg.com/@coral-xyz/anchor@0.30.1/dist/browser/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/web3@4.2.0/dist/web3.min.js"></script>
+  <style>
+    :root{--g:#00ff41;--p:#ff00ff;--d:#000}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--d);color:var(--g);font-family:'Orbitron',monospace;overflow:hidden;height:100vh;position:relative}
+    .scan{background:repeating-linear-gradient(0deg,rgba(0,0,0,.1) 0px,rgba(0,0,0,.1) 2px,transparent 2px,transparent 4px);position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;animation:s 8s linear infinite}
+    @keyframes s{0%{transform:translateY(-100%)}100%{transform:translateY(100%)}}
+    .glitch{font-size:clamp(3rem,10vw,9rem);font-weight:900;text-align:center;position:absolute;top:10%;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,var(--g),var(--p),var(--g));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:g1 2.5s infinite}
+    .glitch::before,.glitch::after{content:'NotMyWallet';position:absolute;top:0;left:0;width:100%;height:100%}
+    .glitch::before{animation:g2 0.4s infinite;clip-path:polygon(0 0,100% 0,100% 35%,0 35%);transform:translate(-2px)}
+    .glitch::after{animation:g3 0.4s infinite;clip-path:polygon(0 65%,100% 65%,100% 100%,0 100%);transform:translate(2px)}
+    @keyframes g1{0%,100%{text-shadow:5px 0 var(--g),-5px 0 var(--p)}25%{text-shadow:-5px 0 var(--g),5px 0 var(--p)}50%{text-shadow:10px 0 var(--p),-10px 0 var(--g)}}
+    @keyframes g2{0%,100%{transform:translate(-2px)}50%{transform:translate(2px)}
+    @keyframes g3{0%,100%{transform:translate(2px)}50%{transform:translate(-2px)}
+    .pepe{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:clamp(300px,70vw,600px);z-index:2;animation:f 6s ease-in-out infinite}
+    @keyframes f{0%,100%{transform:translate(-50%,-50%) rotate(0deg)}50%{transform:translate(-50%,-55%) rotate(5deg)}}
+    canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1}
+    .term{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);background:rgba(0,255,65,0.08);border:3px solid var(--g);padding:30px;border-radius:15px;max-width:90%;text-align:center;box-shadow:0 0 40px var(--g);z-index:5}
+    .btn{background:transparent;border:3px solid var(--g);color:var(--g);padding:18px 50px;font-size:1.8rem;margin:15px;cursor:pointer;transition:.4s;box-shadow:0 0 20px var(--g);font-weight:900}
+    .btn:hover{background:var(--g);color:#000;transform:scale(1.1)}
+    .flag{background:#ff0040!important;border-color:#ff0040!important;box-shadow:0 0 40px #ff0040!important}
+    .share{position:fixed;top:20px;right:20px;background:var(--p);color:#000;z-index:100}
+    .logo{position:fixed;top:15px;left:15px;width:90px;height:90px;background:url('https://pbs.twimg.com/profile_images/1991343934484688896/vEnlNJUF.jpg') center/contain no-repeat;border-radius:50%;box-shadow:0 0 30px var(--g);z-index:100}
+    #status{font-size:1.4rem;margin:20px;color:#f0f}
+    .form{display:none;background:rgba(0,255,65,.1);border:2px solid var(--g);padding:25px;border-radius:15px;max-width:500px;margin:20px auto;box-shadow:0 0 30px var(--g)}
+    textarea{width:100%;background:transparent;color:var(--g);border:1px solid var(--g);padding:15px;font-family:inherit}
+    footer{position:fixed;bottom:10px;width:100%;text-align:center;opacity:.8}
+    a{color:var(--p);text-decoration:none}
+    .description{position:absolute;top:25%;left:50%;transform:translateX(-50%);max-width:80%;text-align:center;font-size:1.2rem;line-height:1.5;color:var(--g);text-shadow:0 0 10px var(--g);z-index:3}
+  </style>
 </head>
 <body>
-    
-    <div class="logo"></div>
-    <button class="btn share" onclick="share()">SHARE ON X</button>
-
-    <div class="scan"></div>
-    
-    <script>
-        // Points flottants pour l'ambiance visuelle
-        for(let i=0; i<100; i++){
-            const star = document.createElement('div');
-            star.className = 'star';
-            star.style.left = Math.random() * 100 + 'vw';
-            star.style.top = Math.random() * 100 + 'vh';
-            star.style.animationDelay = Math.random() * 10 + 's';
-            document.body.appendChild(star);
-        }
-    </script>
-
-    <div class="degen-sign">ANON MASK</div>
-    <div class="degen-sign">REVOLUTION</div>
-    <div class="degen-sign">ANTI-CENSORSHIP</div>
-    <div class="degen-sign">BURN THE SYSTEM</div>
-    <div class="degen-sign">DEGEN UTILITY</div>
-
-
-    <div class="term">
-        <div class="glitch">NOT MY WALLET</div>
-        
-        <div class="message" style="color:var(--p);font-size:1.2rem;font-weight:600;">
-            ON-CHAIN FLAG: ANTI-CENSORSHIP | REVOLUTION
-        </div>
-
-        <div class="message">
-            They can ban Tornado. Sanction Railgun. Freeze USDC.<br>
-            **They'll never stop you from burning your own address.**
-        </div>
-        
-        <div id="status">> Connect compromised wallet – Pay the toll, assert ownership, burn forever.</div>
-        
-        <button class="btn" onclick="connect()">CONNECT WALLET</button>
-        <button class="btn flag" id="flagBtn" style="display:none" onclick="flag()">⚠️ FLAG AS COMPROMISED</button>
-        
-        <div class="form" id="form">
-            <h3>Chain: <span id="chain">???</span></h3>
-            <p>Address: <span id="addr"></span></p>
-            <textarea id="reason" placeholder="Reason (public - optional)"></textarea>
-            <small style="color:var(--r);">⚠️ WARNING: Fee (0.01 SOL / 0.001 ETH) is transferred to the Degen Graveyard.</small>
-        </div>
+  <div class="logo"></div>
+  <button class="btn share" onclick="share()">SHARE ON X</button>
+  <div class="glitch">NotMyWallet</div>
+  <img src="https://i.imgur.com/3vZfK5L.png" class="pepe" alt="Pepe burning wallet">
+  <div class="scan"></div>
+  <canvas id="fire"></canvas>
+  <div class="description">
+    <p><strong>My wallet was hacked. It's not mine anymore.</strong></p>
+    <p>Turn a compromised address into a publicly flagged wallet in minutes. So nobody sends funds there ever again.</p>
+    <p><em>Empty your hacked wallet → Connect the compromised address → Pay fee to flag it on-chain</em></p>
+    <p><small>Why? No neutral way to say "This wallet is dead. Don't interact with it." NotMyWallet is verifiable registry for owners to declare compromised wallets. Pure degen privacy.</small></p>
+  </div>
+  <div class="term">
+    <div id="status">> Connect compromised wallet – burn forever</div>
+    <button class="btn" onclick="connect()">CONNECT WALLET</button>
+    <button class="btn flag" id="flagBtn" style="display:none" onclick="flag()">FLAG AS COMPROMISED</button>
+    <div class="form" id="form">
+      <h3>Chain: <span id="chain">???</span></h3>
+      <p>Address: <span id="addr"></span></p>
+      <textarea id="reason" placeholder="Reason (public - optional)"></textarea>
+      <small>Fee: 0.01 SOL (Solana) → zeEcyxGeM... or 0.001 ETH (Base) → 0xb45464...</small>
     </div>
-
-    <footer><a href="https://x.com/notmywallet_io" target="_blank">@notmywallet_io • PUBLIC GRAVEYARD • #NotMyWallet 🔪</a></footer>
-
-    <script>
-        const SOL_PROGRAM="9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin"; 
-        const SOL_TREASURY="zeEcyxGeM297wVYXKRjkKFdG1K6EAYwn3CjbajEnYGi"; 
-        const BASE_TREASURY="0xb454640B8AA2a7974586c121c200541118d01982"; 
-        const BASE_CHAIN_ID=8453; 
-        let sol=false,acc=null;
-
-        async function connect(){
-            document.getElementById("status").innerHTML="> Connecting wallet...";
-            
-            if(window.solana?.isPhantom){
-                try {
-                    await window.solana.connect(); sol=true; acc=window.solana.publicKey.toString();
-                    show("Solana"); return;
-                } catch(e) { console.error("Solana Connect Error:", e); }
-            }
-            
-            if(window.ethereum){
-                try {
-                    const w=new Web3(window.ethereum);
-                    await window.ethereum.request({method:'eth_requestAccounts'});
-                    await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:'0x'+BASE_CHAIN_ID.toString(16)}]});
-                    acc=(await w.eth.getAccounts())[0]; sol=false;
-                    show("Base/EVM"); return;
-                } catch(e) { 
-                    console.error("EVM Connect Error:", e);
-                    document.getElementById("status").innerHTML="> Connection failed. (Is wallet unlocked & Base network added?)";
-                }
-            }
-            alert("Phantom or MetaMask/Rabby required to join the resistance.");
-            document.getElementById("status").innerHTML="> Connect the compromised address – Pay the toll, assert ownership, burn forever.";
-        }
-
-        function show(c){
-            document.getElementById("chain").innerText=c;
-            document.getElementById("addr").innerText=acc.slice(0,10)+"..."+acc.slice(-4);
-            document.getElementById("form").style.display="block";
-            document.getElementById("flagBtn").style.display="block";
-            document.getElementById("status").innerHTML="> 🔗 Wallet connected. Ready for permanent on-chain flag.";
-        }
-
-        async function flag(){
-            const r=document.getElementById("reason").value||"Anti-Censorship / Compromised";
-            document.getElementById("status").innerHTML="> ⚠️ Awaiting transaction confirmation in wallet...";
-            
-            if(sol){
-                const conn=new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
-                const lamportsToSend = 10000000; // 0.01 SOL
-
-                const tx = new solanaWeb3.Transaction().add(
-                    solanaWeb3.SystemProgram.transfer({
-                        fromPubkey: window.solana.publicKey,
-                        toPubkey: new solanaWeb3.PublicKey(SOL_TREASURY),
-                        lamports: lamportsToSend,
-                    })
-                );
-
-                try{
-                    const { signature } = await window.solana.signAndSendTransaction(tx);
-                    await conn.confirmTransaction(signature, 'confirmed');
-
-                    document.getElementById("status").innerHTML=`> ✅ BURNED! (Fee Transferred)<br><a href="https://solscan.io/tx/${signature}" target="_blank" style="color:#f0f">View Service Fee Tx on Solscan</a>`;
-                }catch(e){
-                    document.getElementById("status").innerHTML="> ❌ Failed – Check that your wallet has enough SOL for the fee (0.01 SOL + Gas).";
-                }
-
-            }else{
-                const w=new Web3(window.ethereum);
-                const abi=[{"inputs":[{"internalType":"string","name":"_reason","type":"string"}],"name":"flag","outputs":[],"stateMutability":"payable","type":"function"}];
-                const ctr=new w.eth.Contract(abi,BASE_TREASURY);
-                try{
-                    const tx=await ctr.methods.flag(r).send({from:acc,value:w.utils.toWei("0.001","ether")});
-                    document.getElementById("status").innerHTML=`> ✅ BURNED!<br><a href="https://basescan.org/tx/${tx.transactionHash}" target="_blank" style="color:#f0f">View Flag Tx on Basescan</a>`;
-                }catch(e){
-                    document.getElementById("status").innerHTML="> ❌ Failed – Check that your wallet has enough ETH for the fee (0.001 ETH + Gas).";
-                }
-            }
-        }
-        function share(){
-            const t="Just flagged my wallet on-chain forever with @notmywallet_io – the ultimate act of #AntiCensorship. Join the resistance! #NotMyWallet";
-            window.open("https://x.com/intent/tweet?text="+encodeURIComponent(t));
-        }
-    </script>
+  </div>
+  <footer><a href="https://x.com/notmywallet_io" target="_blank">@notmywallet_io • Join the graveyard • #NotMyWallet</a></footer>
+  <script>
+    // Fire + animation
+    const c=document.getElementById('fire'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;
+    const p=[],n=200;class P{constructor(){this.x=Math.random()*c.width;this.y=c.height;this.s=1+Math.random()*4;this.v=-2-Math.random()*4;this.h=Math.random()*60}
+    u(){this.y+=this.v;if(this.y<-10)this.y=c.height;this.x+=Math.sin(Date.now()/500)*2}
+    d(){x.fillStyle=`hsl(${this.h},100%,50%)`;x.globalAlpha=0.8;x.fillRect(this.x,this.y,this.s,this.s*10)}}
+    for(let i=0;i<n;i++)p.push(new P());
+    function a(){x.fillStyle='rgba(0,0,0,0.05)';x.fillRect(0,0,c.width,c.height);p.forEach(e=>{e.u();e.d()});requestAnimationFrame(a)};a();
+    // MAINNET + FEES RÉELS
+    const SOL_PROGRAM="9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin";
+    const SOL_TREASURY="zeEcyxGeM297wVYXKRjkKFdG1K6EAYwn3CjbajEnYGi";
+    const BASE_TREASURY="0xb454640B8AA2a7974586c121c200541118d01982";
+    let sol=false,acc=null;
+    async function connect(){
+      if(window.solana?.isPhantom){await window.solana.connect();sol=true;acc=window.solana.publicKey.toString();show("Solana");return}
+      if(window.ethereum){const w=new Web3(window.ethereum);await window.ethereum.request({method:'eth_requestAccounts'});acc=(await w.eth.getAccounts())[0];sol=false;show("Base");return}
+      alert("Phantom or MetaMask required");
+    }
+    function show(c){document.getElementById("chain").innerText=c;document.getElementById("addr").innerText=acc.slice(0,10)+"..."+acc.slice(-4);document.getElementById("form").style.display="block";document.getElementById("flagBtn").style.display="block";document.getElementById("status").innerHTML="> Connected on "+c}
+    async function flag(){
+      const r=document.getElementById("reason").value||"hacked";
+      document.getElementById("status").innerHTML="> Sending...";
+      if(sol){
+        const conn=new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
+        const prov=new anchor.AnchorProvider(conn,window.solana,{});
+        const idl=await anchor.Program.fetchIdl(SOL_PROGRAM,prov);
+        const prog=new anchor.Program(idl,SOL_PROGRAM,prov);
+        const [pda]=anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("compromised"),window.solana.publicKey.toBuffer()],prog.programId);
+        try{
+          const sig=await prog.methods.flag(r).accounts({user:window.solana.publicKey,compromised:pda,systemProgram:anchor.web3.SystemProgram.programId}).rpc();
+          // 0.01 SOL fee
+          const tx=new solanaWeb3.Transaction().add(solanaWeb3.SystemProgram.transfer({fromPubkey:window.solana.publicKey,toPubkey:new solanaWeb3.PublicKey(SOL_TREASURY),lamports:10000000}));
+          await window.solana.signAndSendTransaction(tx);
+          document.getElementById("status").innerHTML=`> BURNED!<br><a href="https://solscan.io/tx/${sig}" target="_blank" style="color:#f0f">View on Solscan</a>`;
+        }catch(e){document.getElementById("status").innerHTML="> Failed – check balance"}
+      }else{
+        const w=new Web3(window.ethereum);
+        const abi=[{"inputs":[{"internalType":"string","name":"_reason","type":"string"}],"name":"flag","outputs":[],"stateMutability":"payable","type":"function"}];
+        const ctr=new w.eth.Contract(abi,BASE_TREASURY);
+        try{
+          const tx=await ctr.methods.flag(r).send({from:acc,value:w.utils.toWei("0.001","ether")});
+          document.getElementById("status").innerHTML=`> BURNED!<br><a href="https://basescan.org/tx/${tx.transactionHash}" target="_blank" style="color:#f0f">View on Basescan</a>`;
+        }catch(e){document.getElementById("status").innerHTML="> Failed – check balance"}
+      }
+    }
+    function share(){window.open("https://x.com/intent/tweet?text="+encodeURIComponent("Just burned my hacked wallet forever with @notmywallet_io – degen privacy wins https://notmywallet.xyz #NotMyWallet"))}
+  </script>
 </body>
-</html>"""
-
-html_file_name_final = "index.html"
-with open(html_file_name_final, "w", encoding="utf-8") as f:
-    f.write(html_content_final_stable_v6)
-
-try:
-    files.download(html_file_name_final)
-    print("Le téléchargement du fichier 'index.html' (Degen Max - Stable V6) a été initié.")
-    print("\n--- ÉTAPE FINALE : UPLOAD SUR GITHUB/VERCEL ---")
-    print("1. Téléchargez ce fichier 'index.html'.")
-    print("2. Uploadez-le sur Vercel/GitHub en remplacement de l'ancien.")
-    print("3. La version avec les couleurs et les signes est maintenant stable.")
-except Exception as e:
-    print(f"Le téléchargement automatique a échoué ({e}).")
+</html>
