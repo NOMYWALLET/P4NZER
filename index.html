@@ -1,25 +1,22 @@
-import base64
-import os
-from google.colab import files
+Je vois exactement le problème sur ta capture d'écran \! 🚨
 
-# --- 1. FONCTION POUR ENCODER LES IMAGES (Plus de liens cassés) ---
-def image_to_base64(filename):
-    if os.path.exists(filename):
-        with open(filename, "rb") as image_file:
-            return "data:image/jpeg;base64," + base64.b64encode(image_file.read()).decode('utf-8')
-    return ""
+**Tu as copié le code Python (le script de génération) à l'intérieur de ton fichier HTML.** C'est pour ça que le site est blanc avec du texte bizarre : le navigateur essaye d'afficher le code Python comme si c'était du texte.
 
-# Charge tes images (Assure-toi qu'elles sont dans le dossier Colab !)
-logo_b64 = image_to_base64("logo nmw.jpg")
-cz_pepe_b64 = image_to_base64("cz pepe.jpg")
+On oublie le Python. C'est trop source d'erreurs.
 
-# Fallback (Sécurité si tu as oublié d'uploader les fichiers)
-if not logo_b64: logo_b64 = "https://i.imgur.com/vEnlNJU.jpg"
-if not cz_pepe_b64: cz_pepe_b64 = "https://i.imgur.com/3vZfK5L.png"
+Voici le **CODE HTML PUR**. Il contient **tout** (le design, les images via liens, la logique crypto, les corrections).
 
+### ⚡️ INSTRUCTIONS (30 secondes)
 
-# --- 2. LE CODE HTML/JS/CSS FINAL ET CORRIGÉ ---
-html_content = f"""<!DOCTYPE html>
+1.  Ouvre ton fichier **`index.html`**.
+2.  **EFFACE TOUT** ce qu'il y a dedans (vraiment tout).
+3.  **COPIE** le bloc de code ci-dessous et **COLLE-LE**.
+4.  Sauvegarde et mets en ligne.
+
+<!-- end list -->
+
+```html
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -28,100 +25,100 @@ html_content = f"""<!DOCTYPE html>
   
   <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/4.2.2/web3.min.js"></script>
-  
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
-    :root {{
+    :root {
       --neon: #00ff41;
       --purple: #9d4edd;
       --bg: #02040a;
       --panel: rgba(15, 23, 42, 0.95);
-    }}
+    }
 
-    body {{
+    body {
       margin: 0; overflow-x: hidden; background-color: var(--bg);
       color: #fff; font-family: 'Space Grotesk', monospace;
       display: flex; flex-direction: column; align-items: center; min-height: 100vh;
-    }}
+    }
 
     /* FOND ANIMÉ */
-    canvas {{ position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }}
+    canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }
 
     /* CONTAINER */
-    .container {{
-      max-width: 550px; width: 95%; margin: 40px auto; z-index: 10; text-align: center;
-    }}
+    .container {
+      max-width: 600px; width: 95%; margin: 40px auto; z-index: 10; text-align: center;
+    }
 
     /* LOGO */
-    .brand-logo {{
-      width: 100px; height: 100px; border-radius: 50%;
-      background: url('{logo_b64}') center/cover;
+    .brand-logo {
+      width: 120px; height: 120px; border-radius: 50%;
+      /* LIEN IMGUR DIRECT */
+      background: url('https://i.imgur.com/vEnlNJU.jpg') center/cover;
       border: 3px solid var(--neon);
       box-shadow: 0 0 30px rgba(0, 255, 65, 0.4);
       margin: 20px auto;
-    }}
+    }
 
-    h1 {{ font-size: 2.8rem; line-height: 1; margin-bottom: 10px; text-transform: uppercase; }}
-    h1 span {{ color: var(--neon); text-shadow: 0 0 10px var(--neon); }}
-    .subtitle {{ color: #aaa; font-size: 1rem; margin-bottom: 30px; }}
+    h1 { font-size: 3rem; line-height: 1; margin-bottom: 10px; text-transform: uppercase; }
+    h1 span { color: var(--neon); text-shadow: 0 0 10px var(--neon); }
+    .subtitle { color: #aaa; font-size: 1.1rem; margin-bottom: 30px; }
 
     /* BOX PRINCIPALE */
-    .box {{
+    .box {
       background: var(--panel); border: 1px solid #333; border-radius: 24px;
       padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-    }}
+    }
 
     /* NETWORK SWITCHER */
-    .label-net {{ font-size: 0.8rem; color: #666; display: block; text-align: left; margin-bottom: 8px; font-weight: bold; }}
-    .network-grid {{
-      display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 20px;
-    }}
-    .net-btn {{
-      padding: 10px; border: 1px solid #333; background: #0a0a0a; color: #666;
+    .label-net { font-size: 0.8rem; color: #666; display: block; text-align: left; margin-bottom: 8px; font-weight: bold; }
+    .network-grid {
+      display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px;
+    }
+    .net-btn {
+      padding: 12px; border: 1px solid #333; background: #0a0a0a; color: #666;
       border-radius: 8px; cursor: pointer; font-weight: bold; font-family: inherit; transition: 0.2s;
-    }}
-    .net-btn:hover {{ border-color: #fff; color: #fff; }}
-    .net-btn.active {{
+    }
+    .net-btn:hover { border-color: #fff; color: #fff; }
+    .net-btn.active {
       background: var(--neon); color: #000; border-color: var(--neon); box-shadow: 0 0 15px rgba(0,255,65,0.4);
-    }}
+    }
 
     /* STATUS & INPUTS */
-    .status-line {{
+    .status-line {
       font-family: monospace; color: var(--neon); text-align: left;
-      margin-bottom: 15px; padding: 12px; background: #000; border-radius: 8px; border: 1px solid #333;
-      font-size: 0.85rem; word-break: break-all;
-    }}
+      margin-bottom: 15px; padding: 15px; background: #000; border-radius: 8px; border: 1px solid #333;
+      font-size: 0.9rem; word-break: break-all;
+    }
 
-    textarea {{
-      width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid #333;
+    textarea {
+      width: 100%; padding: 15px; background: #0a0a0a; border: 1px solid #333;
       color: #fff; border-radius: 12px; margin-bottom: 15px; font-family: inherit;
-      box-sizing: border-box; resize: vertical; min-height: 70px;
-    }}
+      box-sizing: border-box; resize: vertical; min-height: 80px;
+    }
 
     /* ACTION BUTTONS */
-    .btn-main {{
-      width: 100%; padding: 16px; font-size: 1rem; font-weight: bold;
+    .btn-main {
+      width: 100%; padding: 18px; font-size: 1.1rem; font-weight: bold;
       text-transform: uppercase; border: none; border-radius: 12px; cursor: pointer;
       transition: 0.2s; margin-bottom: 10px; font-family: inherit;
-    }}
-    .btn-connect {{ background: #fff; color: #000; }}
-    .btn-connect:hover {{ background: #ddd; }}
+    }
+    .btn-connect { background: #fff; color: #000; }
+    .btn-connect:hover { background: #ddd; }
     
-    .btn-flag {{
+    .btn-flag {
       background: linear-gradient(45deg, #ff0040, #ff5e00); color: #fff;
       opacity: 0.5; pointer-events: none;
-    }}
-    .btn-flag.ready {{ opacity: 1; pointer-events: auto; box-shadow: 0 5px 20px rgba(255, 0, 64, 0.4); }}
-    .btn-flag:hover {{ transform: scale(1.02); }}
+    }
+    .btn-flag.ready { opacity: 1; pointer-events: auto; box-shadow: 0 5px 20px rgba(255, 0, 64, 0.4); }
+    .btn-flag:hover { transform: scale(1.02); }
 
-    .fee-info {{ font-size: 0.8rem; color: #666; margin-top: 10px; }}
-    footer {{ margin-top: 40px; color: #444; font-size: 0.8rem; padding-bottom: 20px; }}
+    .fee-info { font-size: 0.9rem; color: #666; margin-top: 10px; }
+    footer { margin-top: 40px; color: #444; font-size: 0.9rem; padding-bottom: 20px; }
   </style>
 </head>
 <body>
 
-  <img id="czPepeSrc" src="{cz_pepe_b64}" style="display:none;">
+  <img id="czPepeSrc" src="https://i.imgur.com/3vZfK5L.png" style="display:none;" crossorigin="anonymous">
 
   <div class="container">
     <div class="brand-logo"></div>
@@ -164,7 +161,7 @@ html_content = f"""<!DOCTYPE html>
     let web3;
 
     // --- 1. SELECTEUR DE RESEAU ---
-    function selectNetwork(chain) {{
+    function selectNetwork(chain) {
         currentChain = chain;
         // UI Updates
         document.querySelectorAll('.net-btn').forEach(b => b.classList.remove('active'));
@@ -172,137 +169,130 @@ html_content = f"""<!DOCTYPE html>
         
         document.getElementById('console').innerText = "> Selected: " + chain;
         
-        // Fee Display Update
         let feeText = "Fee: 0.001 ";
         if(chain === 'SOL') feeText += "SOL";
         else feeText += (chain === 'BNB' ? 'BNB' : 'ETH');
         document.getElementById('feeDisplay').innerText = feeText;
         
-        // Reset State
         account = null;
         document.getElementById('flagBtn').classList.remove('ready');
         document.getElementById('connectBtn').innerText = "1. CONNECT WALLET";
-    }}
+    }
     
-    // Init
-    selectNetwork('SOL');
+    selectNetwork('SOL'); // Init
 
     // --- 2. CONNEXION ---
-    async function connect() {{
-        try {{
-            if (currentChain === 'SOL') {{
+    async function connect() {
+        try {
+            if (currentChain === 'SOL') {
                 // SOLANA
                 if (!window.solana || !window.solana.isPhantom) return alert("Phantom Wallet not found!");
                 await window.solana.connect();
                 account = window.solana.publicKey.toString();
-            }} else {{
+            } else {
                 // EVM (ETH/BASE/BNB)
                 if (!window.ethereum) return alert("MetaMask / Rabby not found!");
                 web3 = new Web3(window.ethereum);
-                await window.ethereum.request({{ method: 'eth_requestAccounts' }});
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accs = await web3.eth.getAccounts();
                 account = accs[0];
 
-                // AUTO-SWITCH NETWORK
+                // SWITCH NETWORK (Optionnel mais mieux)
                 let chainIdHex;
                 if(currentChain === 'BASE') chainIdHex = '0x2105'; // 8453
                 if(currentChain === 'BNB')  chainIdHex = '0x38';   // 56
                 if(currentChain === 'ETH')  chainIdHex = '0x1';    // 1
                 
-                try {{
-                    await window.ethereum.request({{
+                try {
+                    await window.ethereum.request({
                         method: 'wallet_switchEthereumChain',
-                        params: [{{ chainId: chainIdHex }}],
-                    }});
-                }} catch (switchError) {{
-                    alert("Please switch your wallet to " + currentChain);
-                }}
-            }}
+                        params: [{ chainId: chainIdHex }],
+                    });
+                } catch (switchError) {
+                    // On continue même si l'user refuse le switch, MetaMask gérera
+                }
+            }
 
             document.getElementById('console').innerText = "> Connected: " + account.slice(0,6) + "...";
             document.getElementById('connectBtn').innerText = "CONNECTED";
             document.getElementById('flagBtn').classList.add('ready');
 
-        }} catch (e) {{
+        } catch (e) {
             console.error(e);
             document.getElementById('console').innerText = "> Connection failed.";
-        }}
-    }}
+        }
+    }
 
-    // --- 3. FLAG / TRANSACTION ---
-    async function flag() {{
+    // --- 3. FLAG ---
+    async function flag() {
         if(!account) return alert("Connect wallet first");
         const reason = document.getElementById('reason').value || "COMPROMISED";
         document.getElementById('console').innerText = "> Initiating transaction...";
 
-        if (currentChain === 'SOL') {{
-            await flagSolana(reason);
-        }} else {{
-            await flagEVM(reason);
-        }}
-    }}
+        if (currentChain === 'SOL') await flagSolana(reason);
+        else await flagEVM(reason);
+    }
 
-    async function flagSolana(reason) {{
-        try {{
+    async function flagSolana(reason) {
+        try {
             const connection = new solanaWeb3.Connection(SOLANA_RPC, "confirmed");
             const tx = new solanaWeb3.Transaction();
             
-            // Transfert 0.001 SOL
-            tx.add(solanaWeb3.SystemProgram.transfer({{
+            // 1. TRANSFERT 0.001 SOL (Fixe et petit)
+            tx.add(solanaWeb3.SystemProgram.transfer({
                 fromPubkey: window.solana.publicKey,
                 toPubkey: new solanaWeb3.PublicKey(SOL_TREASURY),
-                lamports: 1000000 
-            }}));
+                lamports: 1000000 // 0.001 SOL
+            }));
 
-            // Memo
-            tx.add(new solanaWeb3.TransactionInstruction({{
-                keys: [{{ pubkey: window.solana.publicKey, isSigner: true, isWritable: true }}],
+            // 2. MEMO
+            tx.add(new solanaWeb3.TransactionInstruction({
+                keys: [{ pubkey: window.solana.publicKey, isSigner: true, isWritable: true }],
                 programId: new solanaWeb3.PublicKey(MEMO_ID),
                 data: new TextEncoder().encode("NMW FLAG: " + reason)
-            }}));
+            }));
 
-            const {{ blockhash }} = await connection.getLatestBlockhash();
+            const { blockhash } = await connection.getLatestBlockhash();
             tx.recentBlockhash = blockhash;
             tx.feePayer = window.solana.publicKey;
 
-            const {{ signature }} = await window.solana.signAndSendTransaction(tx);
+            const { signature } = await window.solana.signAndSendTransaction(tx);
             
-            // Confirmation UI
-            document.getElementById('console').innerHTML = `✅ SUCCESS!<br><a href="https://solscan.io/tx/${{signature}}" target="_blank" style="color:var(--neon)">View Proof</a>`;
+            // On n'attend pas la confirmation stricte pour l'UI pour aller plus vite
+            document.getElementById('console').innerHTML = `✅ <a href="https://solscan.io/tx/${signature}" target="_blank" style="color:var(--neon)">View Proof</a>`;
 
-        }} catch (e) {{
+        } catch (e) {
             console.error(e);
-            document.getElementById('console').innerText = "> Error: " + (e.message || "Check Balance");
-        }}
-    }}
+            document.getElementById('console').innerText = "> Error: Check SOL Balance or RPC.";
+        }
+    }
 
-    async function flagEVM(reason) {{
-        try {{
-            // FIX: STRICTEMENT 0.001 ETH/BNB
-            const valueWei = web3.utils.toWei("0.001", "ether"); 
+    async function flagEVM(reason) {
+        try {
+            const valueWei = web3.utils.toWei("0.001", "ether"); // STRICTEMENT 0.001
             const hexData = web3.utils.utf8ToHex("NMW FLAG: " + reason);
 
-            const txHash = await window.ethereum.request({{
+            const txHash = await window.ethereum.request({
                 method: 'eth_sendTransaction',
-                params: [{{
+                params: [{
                     from: account,
                     to: EVM_TREASURY,
                     value: valueWei, 
                     data: hexData
-                }}]
-            }});
+                }]
+            });
 
             let explorer = "etherscan.io";
             if(currentChain === 'BASE') explorer = "basescan.org";
             if(currentChain === 'BNB') explorer = "bscscan.com";
 
-            document.getElementById('console').innerHTML = `✅ SUCCESS!<br><a href="https://${{explorer}}/tx/${{txHash}}" target="_blank" style="color:var(--neon)">View Proof</a>`;
+            document.getElementById('console').innerHTML = `✅ <a href="https://${explorer}/tx/${txHash}" target="_blank" style="color:var(--neon)">View Proof</a>`;
 
-        }} catch (e) {{
+        } catch (e) {
             console.error(e);
             document.getElementById('console').innerText = "> Error: Check Gas/Balance.";
-        }}
-    }}
+        }
+    }
 
     // --- ANIMATION DE FOND (PLUIE DE CZ PEPE) ---
     const canvas = document.createElement('canvas');
@@ -312,47 +302,51 @@ html_content = f"""<!DOCTYPE html>
 
     let particles = [];
     
-    function resize() {{
+    function resize() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-    }}
+    }
     window.addEventListener('resize', resize);
     
-    img.onload = function() {{
+    // On lance l'animation même si l'image charge pas tout de suite
+    setTimeout(() => {
         resize();
-        for(let i=0; i<40; i++) {{
-            particles.push({{
+        initParticles();
+        animate();
+    }, 100);
+
+    function initParticles() {
+        for(let i=0; i<30; i++) {
+            particles.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
                 speed: 0.5 + Math.random() * 1.5,
-                size: 30 + Math.random() * 50,
+                size: 40 + Math.random() * 60,
                 rot: Math.random() * 360
-            }});
-        }}
-        animate();
-    }};
+            });
+        }
+    }
 
-    function animate() {{
+    function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        particles.forEach(p => {{
-            p.y += p.speed;
-            if(p.y > canvas.height) p.y = -100;
-            ctx.save();
-            ctx.translate(p.x, p.y);
-            ctx.rotate(p.rot * Math.PI / 180);
-            ctx.globalAlpha = 0.2;
-            ctx.drawImage(img, -p.size/2, -p.size/2, p.size, p.size);
-            ctx.restore();
-            p.rot += 0.01;
-        }});
+        if (img.complete) { // Dessine seulement si l'image est chargée
+            particles.forEach(p => {
+                p.y += p.speed;
+                if(p.y > canvas.height) p.y = -100;
+                
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rot * Math.PI / 180);
+                ctx.globalAlpha = 0.2;
+                ctx.drawImage(img, -p.size/2, -p.size/2, p.size, p.size);
+                ctx.restore();
+                
+                p.rot += 0.01;
+            });
+        }
         requestAnimationFrame(animate);
-    }}
+    }
   </script>
 </body>
 </html>
-"""
-
-with open("index.html", "w") as f:
-    f.write(html_content)
-
-files.download("index.html")
+```
