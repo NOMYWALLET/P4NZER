@@ -2,22 +2,22 @@ import base64
 import os
 from google.colab import files
 
-# Fonction pour convertir une image en texte pour l'intégrer au HTML
+# Fonction pour convertir tes images en code pour le HTML
 def image_to_base64(filename):
     if os.path.exists(filename):
         with open(filename, "rb") as image_file:
             return "data:image/jpeg;base64," + base64.b64encode(image_file.read()).decode('utf-8')
-    return "" # Retourne vide si pas trouvé
+    return ""
 
-# 1. Encodage de vos images
+# 1. On récupère tes images
 logo_b64 = image_to_base64("logo nmw.jpg")
 cz_pepe_b64 = image_to_base64("cz pepe.jpg")
 
-# Si les images ne sont pas trouvées, on met des placeholders pour que le code marche quand même
+# Fallback si les images ne sont pas trouvées (pour éviter les erreurs)
 if not logo_b64: logo_b64 = "https://i.imgur.com/vEnlNJU.jpg"
 if not cz_pepe_b64: cz_pepe_b64 = "https://i.imgur.com/3vZfK5L.png"
 
-# 2. Le Code HTML/JS/CSS Complet
+# 2. Le Code du Site (COMPLET avec HTML/CSS/JS)
 html_code = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,33 +43,33 @@ html_code = f"""<!DOCTYPE html>
       display: flex; flex-direction: column; align-items: center; min-height: 100vh;
     }}
 
-    /* FOND CZ PEPE ANIMÉ */
-    canvas {{ position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.4; }}
+    /* FOND CZ PEPE */
+    canvas {{ position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }}
 
-    /* LAYOUT */
-    .container {{
-      max-width: 600px; width: 95%; margin: 40px auto; z-index: 10; text-align: center;
-    }}
-
-    /* LOGO MARQUE */
+    /* LOGO */
     .brand-logo {{
-      width: 120px; height: 120px; border-radius: 20px;
+      width: 100px; height: 100px; border-radius: 20px;
       background: url('{logo_b64}') center/cover;
-      border: 3px solid var(--neon);
-      box-shadow: 0 0 40px rgba(0, 255, 65, 0.3);
-      margin: 0 auto 20px;
+      border: 2px solid var(--neon);
+      box-shadow: 0 0 30px rgba(0, 255, 65, 0.4);
+      margin: 40px auto 20px;
     }}
-    
-    h1 {{ font-size: 2.5rem; line-height: 1; margin-bottom: 10px; text-transform: uppercase; }}
+
+    /* TYPO */
+    h1 {{ font-size: 3rem; line-height: 1; margin-bottom: 10px; text-transform: uppercase; text-align: center; }}
     h1 span {{ color: var(--neon); text-shadow: 0 0 10px var(--neon); }}
-    .subtitle {{ color: #aaa; font-size: 1rem; margin-bottom: 30px; }}
+    .subtitle {{ color: #aaa; font-size: 1rem; margin-bottom: 30px; text-align: center; }}
 
     /* NETWORK SWITCHER */
+    .container {{ max-width: 500px; width: 95%; z-index: 10; }}
+    
+    .label {{ font-size: 0.8rem; color: #666; margin-bottom: 5px; display: block; font-weight: bold; }}
+    
     .network-grid {{
       display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px;
     }}
     .net-btn {{
-      padding: 10px; border: 1px solid #333; background: #111; color: #666;
+      padding: 12px; border: 1px solid #333; background: #111; color: #666;
       border-radius: 8px; cursor: pointer; font-weight: bold; font-family: inherit; transition: 0.2s;
     }}
     .net-btn:hover {{ border-color: #fff; color: #fff; }}
@@ -79,19 +79,20 @@ html_code = f"""<!DOCTYPE html>
 
     /* ACTION BOX */
     .box {{
-      background: var(--panel); border: 1px solid #333; border-radius: 24px;
-      padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+      background: var(--panel); border: 1px solid #333; border-radius: 20px;
+      padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.9);
     }}
 
     .status-line {{
       font-family: monospace; color: var(--neon); text-align: left;
-      margin-bottom: 20px; padding: 10px; background: #000; border-radius: 8px; border: 1px solid #333;
+      margin-bottom: 20px; padding: 12px; background: #000; border-radius: 8px; border: 1px solid #333;
+      font-size: 0.9rem; word-break: break-all;
     }}
 
-    input, textarea {{
+    textarea {{
       width: 100%; padding: 15px; background: #0a0a0a; border: 1px solid #333;
       color: #fff; border-radius: 12px; margin-bottom: 15px; font-family: inherit;
-      box-sizing: border-box;
+      box-sizing: border-box; resize: vertical; min-height: 80px;
     }}
     
     .btn-main {{
@@ -104,27 +105,26 @@ html_code = f"""<!DOCTYPE html>
     
     .btn-flag {{
       background: linear-gradient(45deg, #ff0040, #ff5e00); color: #fff;
-      opacity: 0.5; pointer-events: none; box-shadow: 0 5px 20px rgba(255, 0, 64, 0.2);
+      opacity: 0.5; pointer-events: none;
     }}
-    .btn-flag.ready {{ opacity: 1; pointer-events: auto; }}
+    .btn-flag.ready {{ opacity: 1; pointer-events: auto; box-shadow: 0 5px 20px rgba(255, 0, 64, 0.4); }}
     .btn-flag:hover {{ transform: scale(1.02); }}
 
-    .fee-info {{ font-size: 0.8rem; color: #666; margin-top: 10px; }}
-
-    footer {{ margin-top: 50px; color: #444; font-size: 0.8rem; padding-bottom: 20px; }}
+    .fee-info {{ font-size: 0.8rem; color: #666; margin-top: 10px; text-align: center; }}
+    footer {{ margin-top: 50px; color: #444; font-size: 0.8rem; padding-bottom: 20px; text-align: center; }}
   </style>
 </head>
 <body>
 
   <img id="czPepeSrc" src="{cz_pepe_b64}" style="display:none;">
 
-  <div class="container">
-    <div class="brand-logo"></div>
-    <h1>Not My<br><span>Wallet</span></h1>
-    <p class="subtitle">Registry of Dead Wallets. Flag it on-chain forever.</p>
+  <div class="brand-logo"></div>
+  <h1>Not My<br><span>Wallet</span></h1>
+  <p class="subtitle">Registry of Dead Wallets. Flag it on-chain forever.</p>
 
+  <div class="container">
     <div class="box">
-      <label style="font-size:0.8rem; color:#666; display:block; text-align:left; margin-bottom:5px;">SELECT NETWORK</label>
+      <span class="label">SELECT NETWORK</span>
       <div class="network-grid">
         <button class="net-btn" id="btn-sol" onclick="selectNetwork('SOL')">SOL</button>
         <button class="net-btn" id="btn-eth" onclick="selectNetwork('ETH')">ETH</button>
@@ -132,7 +132,7 @@ html_code = f"""<!DOCTYPE html>
         <button class="net-btn" id="btn-bnb" onclick="selectNetwork('BNB')">BNB</button>
       </div>
 
-      <div id="console" class="status-line">> Select a network to begin...</div>
+      <div id="console" class="status-line">> Select a network...</div>
 
       <textarea id="reason" placeholder="Reason (Ex: Hacked, Phishing, Private Key Leak...)"></textarea>
 
@@ -141,101 +141,77 @@ html_code = f"""<!DOCTYPE html>
 
       <div class="fee-info" id="feeDisplay">Fee: 0.001 Native Token</div>
     </div>
-
-    <footer>@notmywallet_io • DEGEN PRIVACY</footer>
   </div>
 
+  <footer>@notmywallet_io • DEGEN PRIVACY</footer>
+
   <script>
-    // --- CONFIGURATION ---
+    // CONFIGURATION
     const EVM_TREASURY = "0xb454640B8AA2a7974586c121c200541118d01982";
     const SOL_TREASURY = "zeEcyxGeM297wVYXKRjkKFdG1K6EAYwn3CjbajEnYGi";
     const MEMO_ID      = "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
-    
-    // RPC Publics (Solana)
-    const SOLANA_RPC = "https://solana-rpc.publicnode.com";
+    const SOLANA_RPC   = "https://solana-rpc.publicnode.com";
 
-    let currentChain = 'SOL'; // Default
+    let currentChain = 'SOL';
     let account = null;
     let web3;
 
-    // --- UI LOGIC ---
+    // --- 1. SELECTION RESEAU ---
     function selectNetwork(chain) {{
         currentChain = chain;
-        // Update buttons
         document.querySelectorAll('.net-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('btn-' + chain.toLowerCase()).classList.add('active');
+        document.getElementById('console').innerText = "> Selected: " + chain;
         
-        document.getElementById('console').innerText = "> Selected: " + chain + ". Ready to connect.";
+        if(chain === 'SOL') document.getElementById('feeDisplay').innerText = "Fee: 0.001 SOL";
+        else document.getElementById('feeDisplay').innerText = "Fee: 0.001 " + (chain === 'BNB' ? 'BNB' : 'ETH');
         
-        if(chain === 'SOL') {{
-            document.getElementById('feeDisplay').innerText = "Fee: 0.001 SOL";
-        }} else {{
-            document.getElementById('feeDisplay').innerText = "Fee: 0.001 " + (chain === 'BNB' ? 'BNB' : 'ETH');
-        }}
-        
-        // Reset connection state
         account = null;
         document.getElementById('flagBtn').classList.remove('ready');
         document.getElementById('connectBtn').innerText = "1. CONNECT WALLET";
     }}
+    selectNetwork('SOL'); // Init
 
-    // Initial selection
-    selectNetwork('SOL');
-
-    // --- CONNECT LOGIC ---
+    // --- 2. CONNEXION ---
     async function connect() {{
         try {{
             if (currentChain === 'SOL') {{
-                // SOLANA
                 if (!window.solana || !window.solana.isPhantom) return alert("Phantom Wallet not found!");
                 await window.solana.connect();
                 account = window.solana.publicKey.toString();
             }} else {{
-                // EVM (ETH/BASE/BNB)
                 if (!window.ethereum) return alert("MetaMask / Rabby not found!");
                 web3 = new Web3(window.ethereum);
                 await window.ethereum.request({{ method: 'eth_requestAccounts' }});
                 const accs = await web3.eth.getAccounts();
                 account = accs[0];
 
-                // SWITCH NETWORK
+                // Switch Network
                 let chainIdHex;
                 if(currentChain === 'BASE') chainIdHex = '0x2105'; // 8453
                 if(currentChain === 'BNB')  chainIdHex = '0x38';   // 56
                 if(currentChain === 'ETH')  chainIdHex = '0x1';    // 1
-                
                 try {{
-                    await window.ethereum.request({{
-                        method: 'wallet_switchEthereumChain',
-                        params: [{{ chainId: chainIdHex }}],
-                    }});
-                }} catch (switchError) {{
-                    // Generic error if chain not added (simplification)
-                    alert("Please switch your wallet network to " + currentChain);
-                }}
+                    await window.ethereum.request({{ method: 'wallet_switchEthereumChain', params: [{{ chainId: chainIdHex }}] }});
+                }} catch (e) {{ alert("Please switch network manually to " + currentChain); }}
             }}
-
             document.getElementById('console').innerText = "> Connected: " + account.slice(0,6) + "...";
             document.getElementById('connectBtn').innerText = "CONNECTED";
             document.getElementById('flagBtn').classList.add('ready');
-
         }} catch (e) {{
             console.error(e);
             document.getElementById('console').innerText = "> Connection failed.";
         }}
     }}
 
-    // --- FLAG LOGIC ---
+    // --- 3. FLAG ---
     async function flag() {{
         if(!account) return alert("Connect wallet first");
         const reason = document.getElementById('reason').value || "COMPROMISED";
         document.getElementById('console').innerText = "> Initiating transaction...";
 
-        if (currentChain === 'SOL') {{
-            await flagSolana(reason);
-        }} else {{
-            await flagEVM(reason);
-        }}
+        if (currentChain === 'SOL') await flagSolana(reason);
+        else await flagEVM(reason);
     }}
 
     async function flagSolana(reason) {{
@@ -243,14 +219,12 @@ html_code = f"""<!DOCTYPE html>
             const connection = new solanaWeb3.Connection(SOLANA_RPC, "confirmed");
             const tx = new solanaWeb3.Transaction();
             
-            // 1. TRANSFERT 0.001 SOL (Fixe)
             tx.add(solanaWeb3.SystemProgram.transfer({{
                 fromPubkey: window.solana.publicKey,
                 toPubkey: new solanaWeb3.PublicKey(SOL_TREASURY),
-                lamports: 1000000 
+                lamports: 1000000 // 0.001 SOL (FIXED FEE)
             }}));
 
-            // 2. MEMO
             tx.add(new solanaWeb3.TransactionInstruction({{
                 keys: [{{ pubkey: window.solana.publicKey, isSigner: true, isWritable: true }}],
                 programId: new solanaWeb3.PublicKey(MEMO_ID),
@@ -262,19 +236,16 @@ html_code = f"""<!DOCTYPE html>
             tx.feePayer = window.solana.publicKey;
 
             const {{ signature }} = await window.solana.signAndSendTransaction(tx);
-            await connection.confirmTransaction(signature, "confirmed");
-            
-            document.getElementById('console').innerHTML = `✅ <a href="https://solscan.io/tx/${{signature}}" target="_blank" style="color:#00ff41">View Proof</a>`;
-
+            document.getElementById('console').innerHTML = `✅ <a href="https://solscan.io/tx/${{signature}}" target="_blank" style="color:var(--neon)">View Proof</a>`;
         }} catch (e) {{
             console.error(e);
-            document.getElementById('console').innerText = "> Error: Check SOL Balance.";
+            document.getElementById('console').innerText = "> Error: " + e.message;
         }}
     }}
 
     async function flagEVM(reason) {{
         try {{
-            const valueWei = web3.utils.toWei("0.001", "ether"); // STRICTEMENT 0.001
+            const valueWei = web3.utils.toWei("0.001", "ether"); // FIXED FEE
             const hexData = web3.utils.utf8ToHex("NMW FLAG: " + reason);
 
             const txHash = await window.ethereum.request({{
@@ -282,80 +253,68 @@ html_code = f"""<!DOCTYPE html>
                 params: [{{
                     from: account,
                     to: EVM_TREASURY,
-                    value: valueWei, // <-- ICI LA CORRECTION CRITIQUE (Pas tout le solde)
+                    value: valueWei,
                     data: hexData
                 }}]
             }});
-
+            
             let explorer = "etherscan.io";
             if(currentChain === 'BASE') explorer = "basescan.org";
             if(currentChain === 'BNB') explorer = "bscscan.com";
-
-            document.getElementById('console').innerHTML = `✅ <a href="https://${{explorer}}/tx/${{txHash}}" target="_blank" style="color:#00ff41">View Proof</a>`;
-
+            document.getElementById('console').innerHTML = `✅ <a href="https://${{explorer}}/tx/${{txHash}}" target="_blank" style="color:var(--neon)">View Proof</a>`;
         }} catch (e) {{
             console.error(e);
-            document.getElementById('console').innerText = "> Error: Check Gas/Balance.";
+            document.getElementById('console').innerText = "> Error: " + e.message;
         }}
     }}
 
-    // --- BACKGROUND ANIMATION (CZ PEPE RAIN) ---
+    // --- BACKGROUND ANIMATION ---
     const canvas = document.createElement('canvas');
     document.body.prepend(canvas);
     const ctx = canvas.getContext('2d');
     const img = document.getElementById('czPepeSrc');
-
     let particles = [];
     
-    function resize() {{
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }}
+    function resize() {{ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }}
     window.addEventListener('resize', resize);
     
-    // Attendre que l'image base64 soit chargée
     img.onload = function() {{
         resize();
-        initParticles();
-        animate();
-    }};
-
-    function initParticles() {{
-        for(let i=0; i<50; i++) {{
+        for(let i=0; i<40; i++) {{
             particles.push({{
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
                 speed: 0.5 + Math.random() * 1.5,
-                size: 30 + Math.random() * 50,
+                size: 40 + Math.random() * 60,
                 rot: Math.random() * 360
             }});
         }}
-    }}
+        animate();
+    }};
 
     function animate() {{
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         particles.forEach(p => {{
             p.y += p.speed;
-            if(p.y > canvas.height) p.y = -50;
-            
+            if(p.y > canvas.height) p.y = -100;
             ctx.save();
             ctx.translate(p.x, p.y);
             ctx.rotate(p.rot * Math.PI / 180);
-            ctx.globalAlpha = 0.3; // Transparence
+            ctx.globalAlpha = 0.2;
             ctx.drawImage(img, -p.size/2, -p.size/2, p.size, p.size);
             ctx.restore();
-            
-            p.rot += 0.5;
+            p.rot += 0.01;
         }});
         requestAnimationFrame(animate);
     }}
-
   </script>
 </body>
 </html>
 """
 
+# Création du fichier
 with open("index.html", "w") as f:
     f.write(html_code)
 
+# Téléchargement automatique
 files.download("index.html")
