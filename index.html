@@ -5,168 +5,133 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NotMyWallet – Flag Your Hacked Wallet</title>
   <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/4.1.1/web3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/web3@4.2.0/dist/web3.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
-
   <style>
-    body { background-color: #050505; color: #fff; font-family: 'Space Grotesk', monospace; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; }
-    
-    /* Fond animé simple */
-    .bg { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle, #1a0b2e 0%, #000 100%); }
-    .mask { position: absolute; font-size: 100px; opacity: 0.1; animation: float 10s infinite ease-in-out; }
-    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-
-    /* Conteneur Principal */
-    .container { max-width: 800px; width: 90%; text-align: center; margin-top: 50px; z-index: 10; }
-    
-    /* Logo et Titre */
-    .logo { width: 80px; height: 80px; border-radius: 50%; border: 2px solid #00ff41; margin: 0 auto 20px; background: url('https://i.imgur.com/vEnlNJU.jpg') center/cover; box-shadow: 0 0 20px #00ff41; }
-    h1 { font-size: 3rem; text-transform: uppercase; margin: 0; line-height: 1; text-shadow: 0 0 15px rgba(0, 255, 65, 0.5); }
-    h1 span { color: #00ff41; }
-    p { color: #aaa; font-size: 1.1rem; margin-top: 15px; }
-
-    /* Image Pepe */
-    .visual { margin: 30px auto; width: 100%; max-width: 400px; border-radius: 15px; border: 1px solid #333; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
-
-    /* Boite de commande */
-    .box { background: rgba(20, 20, 20, 0.95); border: 1px solid #333; padding: 30px; border-radius: 15px; box-shadow: 0 0 50px rgba(0, 255, 65, 0.1); text-align: left; }
-    
-    .status { font-family: monospace; color: #00ff41; margin-bottom: 20px; border-bottom: 1px dashed #444; padding-bottom: 10px; }
-    
-    .btn { width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 8px; border: none; font-weight: bold; font-size: 1rem; cursor: pointer; text-transform: uppercase; font-family: inherit; }
-    .btn-connect { background: #fff; color: #000; }
-    .btn-connect:hover { background: #00ff41; }
-    
-    .btn-flag { background: transparent; border: 2px solid #ff0040; color: #ff0040; opacity: 0.5; pointer-events: none; }
-    .btn-flag.active { opacity: 1; pointer-events: all; background: #ff0040; color: #fff; }
-    .btn-flag.active:hover { box-shadow: 0 0 20px #ff0040; }
-
-    input { width: 100%; padding: 12px; background: #111; border: 1px solid #444; color: #fff; border-radius: 8px; margin-bottom: 20px; font-family: monospace; }
-
-    footer { margin-top: 50px; color: #555; font-size: 0.8rem; }
+    body{background:#050505;color:#fff;font-family:'Space Grotesk',monospace;margin:0;display:flex;flex-direction:column;align-items:center;min-height:100vh;overflow-x:hidden;position:relative}
+    .bg{position:fixed;inset:0;z-index:-1;background:radial-gradient(circle at top,#1a0b2e 0%,#000 100%);opacity:0.9}
+    .mask{position:absolute;font-size:120px;opacity:0.15;animation:float 12s infinite ease-in-out}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-30px)}}
+    .container{max-width:900px;width:90%;text-align:center;margin-top:40px;z-index:10}
+    .logo{width:90px;height:90px;border-radius:50%;border:3px solid #00ff41;margin:0 auto 20px;background:url('https://i.imgur.com/6v6Q8iK.png') center/cover;box-shadow:0 0 30px #00ff41}
+    h1{font-size:3.5rem;text-transform:uppercase;margin:0;line-height:1;text-shadow:0 0 20px rgba(0,255,65,0.6)}
+    h1 span{color:#00ff41}
+    p{color:#aaa;font-size:1.2rem;margin:20px 0;max-width:700px}
+    .visual{margin:40px auto;width:100%;max-width:420px;border-radius:20px;border:2px solid #333;box-shadow:0 0 40px rgba(0,0,0,0.8)}
+    .box{background:rgba(20,20,20,0.95);border:2px solid #333;padding:35px;border-radius:20px;box-shadow:0 0 60px rgba(0,255,65,0.15);max-width:600px;margin:0 auto}
+    .status{font-family:monospace;color:#00ff41;margin-bottom:25px;padding-bottom:15px;border-bottom:1px dashed #444;font-size:1.1rem}
+    input{width:100%;padding:15px;background:#111;border:1px solid #444;color:#fff;border-radius:10px;margin-bottom:20px;font-family:monospace;font-size:1rem}
+    .btn{width:100%;padding:18px;margin:10px 0;border-radius:12px;border:none;font-weight:bold;font-size:1.2rem;cursor:pointer;text-transform:uppercase;transition:.3s}
+    .btn-connect{background:#fff;color:#000}
+    .btn-connect:hover{background:#00ff41;color:#000;box-shadow:0 0 30px #00ff41}
+    .btn-flag{background:transparent;border:3px solid #ff0040;color:#ff0040;opacity:0.5;pointer-events:none}
+    .btn-flag.active{opacity:1;pointer-events:all;background:#ff0040;color:#fff}
+    .btn-flag.active:hover{box-shadow:0 0 40px #ff0040;transform:scale(1.02)}
+    .fee{color:#666;font-size:0.9rem;margin-top:15px}
+    footer{margin:60px 0 30px;color:#555;font-size:0.9rem}
+    a{color:#00ff41;text-decoration:none;font-weight:bold}
+    a:hover{text-decoration:underline}
   </style>
 </head>
 <body>
-
   <div class="bg">
-    <div class="mask" style="top: 10%; left: 10%;">🎭</div>
-    <div class="mask" style="top: 60%; right: 10%;">👺</div>
+    <div class="mask" style="top:10%;left:5%;">🎭</div>
+    <div class="mask" style="top:60%;right:8%;">👺</div>
+    <div class="mask" style="bottom:10%;left:15%;">🎭</div>
   </div>
-
   <div class="container">
     <div class="logo"></div>
     <h1>Not My<br><span>Wallet</span></h1>
-    <p>They can ban Tornado. They can't stop you from burning your own address.<br><strong>Flag it on-chain forever.</strong></p>
-
+    <p>They can ban Tornado. They can sanction Railgun. Freeze USDC.<br><strong>They’ll never stop you from burning your own address.</strong></p>
     <img src="https://i.imgur.com/3vZfK5L.png" class="visual" alt="Pepe burning wallet">
-
     <div class="box">
       <div id="console" class="status">> Waiting for wallet...</div>
-      
-      <input type="text" id="reason" placeholder="Reason (ex: Hacked, Phishing link...)">
-
+      <input type="text" id="reason" placeholder="Reason (ex: Hacked, Phishing, Dusting...)">
       <button class="btn btn-connect" onclick="connect()">1. Connect Wallet</button>
-      <button id="flagBtn" class="btn btn-flag" onclick="flag()">2. 🔥 BURN & FLAG</button>
-      
-      <div style="font-size: 0.8rem; color: #666; margin-top: 10px; text-align: center;">Fee: 0.001 SOL or ETH (Gas only)</div>
+      <button id="flagBtn" class="btn btn-flag" onclick="flag()">2. BURN & FLAG</button>
+      <div class="fee">Fee: 0.01 SOL (Solana) → zeEcyxGeM... or 0.001 ETH (Base) → 0xb45464...</div>
     </div>
-
-    <footer>@notmywallet_io • DEGEN PRIVACY • #NotMyWallet</footer>
+    <footer>
+      <a href="https://x.com/notmywallet_io" target="_blank">@notmywallet_io</a> • DEGEN PRIVACY • #NotMyWallet
+    </footer>
   </div>
 
   <script>
-    // ADRESSES DE RECEPTION (TREASURY)
-    const RECIPIENT = "zeEcyxGeM297wVYXKRjkKFdG1K6EAYwn3CjbajEnYGi"; // Solana
-    const RECIPIENT_ETH = "0xb454640B8AA2a7974586c121c200541118d01982"; // Base/ETH
-
+    const RECIPIENT_SOL = "zeEcyxGeM297wVYXKRjkKFdG1K6EAYwn3CjbajEnYGi";
+    const RECIPIENT_ETH = "0xb454640B8AA2a7974586c121c200541118d01982";
     let account = null;
     let isSolana = false;
     const status = document.getElementById('console');
     const btnFlag = document.getElementById('flagBtn');
 
     async function connect() {
-      status.innerText = "> Detecting...";
-      
-      // 1. SOLANA
+      status.innerText = "> Detecting wallet...";
       if (window.solana && window.solana.isPhantom) {
-        await window.solana.connect();
-        account = window.solana.publicKey.toString();
-        isSolana = true;
-        status.innerText = "> Solana Connected: " + account.slice(0,6) + "...";
-        status.style.color = "#00ff41";
-        btnFlag.classList.add('active');
-        return;
+        try {
+          await window.solana.connect();
+          account = window.solana.publicKey.toString();
+          isSolana = true;
+          status.innerHTML = `> Solana connected<br>${account.slice(0,8)}...${account.slice(-6)}`;
+          btnFlag.classList.add('active');
+        } catch(e) { status.innerText = "> Connection rejected"; }
+      } else if (window.ethereum) {
+        try {
+          const web3 = new Web3(window.ethereum);
+          await window.ethereum.request({ method: 'eth_requestAccounts' });
+          account = (await web3.eth.getAccounts())[0];
+          isSolana = false;
+          status.innerHTML = `> Base/ETH connected<br>${account.slice(0,8)}...${account.slice(-6)}`;
+          btnFlag.classList.add('active');
+        } catch(e) { status.innerText = "> Connection rejected"; }
+      } else {
+        alert("Install Phantom (Solana) or MetaMask (Base/ETH)");
       }
-      
-      // 2. BASE (METAMASK)
-      if (window.ethereum) {
-        const web3 = new Web3(window.ethereum);
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const accs = await web3.eth.getAccounts();
-        account = accs[0];
-        isSolana = false;
-        status.innerText = "> Base/ETH Connected: " + account.slice(0,6) + "...";
-        status.style.color = "#00ff41";
-        btnFlag.classList.add('active');
-        return;
-      }
-      
-      alert("Please install Phantom or MetaMask");
     }
 
     async function flag() {
+      if (!account) return;
       const reason = document.getElementById('reason').value || "COMPROMISED";
-      status.innerText = "> Processing...";
+      status.innerText = "> Sending burn transaction...";
 
       if (isSolana) {
         try {
-          const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com", "confirmed");
+          const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
           const tx = new solanaWeb3.Transaction();
-          
-          // Transfert simple (0.001 SOL)
+
+          // 0.01 SOL fee
           tx.add(solanaWeb3.SystemProgram.transfer({
             fromPubkey: window.solana.publicKey,
-            toPubkey: new solanaWeb3.PublicKey(RECIPIENT),
-            lamports: 1000000 
+            toPubkey: new solanaWeb3.PublicKey(RECIPIENT_SOL),
+            lamports: 10000000 // 0.01 SOL
           }));
-          
-          // Ajout d'un MEMO (C'est ça qui écrit le message sur la blockchain)
+
+          // Memo with reason
           tx.add(new solanaWeb3.TransactionInstruction({
             keys: [{ pubkey: window.solana.publicKey, isSigner: true, isWritable: true }],
             programId: new solanaWeb3.PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"),
-            data: new TextEncoder().encode("NMW FLAG: " + reason)
+            data: Buffer.from("NotMyWallet FLAG: " + reason)
           }));
-          
-          const { blockhash } = await connection.getLatestBlockhash();
-          tx.recentBlockhash = blockhash;
-          tx.feePayer = window.solana.publicKey;
 
           const { signature } = await window.solana.signAndSendTransaction(tx);
-          status.innerHTML = `✅ SUCCESS!<br><a href="https://solscan.io/tx/${signature}" target="_blank" style="color:white">View Proof</a>`;
-          
-        } catch (e) {
+          await connection.confirmTransaction(signature);
+          status.innerHTML = `> BURNED FOREVER!<br><a href="https://solscan.io/tx/${signature}" target="_blank" style="color:#00ff41">View on Solscan</a>`;
+        } catch(e) {
           console.error(e);
-          status.innerText = "> Failed: Check Balance (Need >0.002 SOL)";
-          status.style.color = "red";
+          status.innerText = "> Failed – not enough SOL?";
         }
       } else {
         try {
           const web3 = new Web3(window.ethereum);
-          // Encodage du message dans la transaction
-          const hexData = web3.utils.utf8ToHex("NMW FLAG: " + reason);
-          
-          const txHash = await window.ethereum.request({
-            method: 'eth_sendTransaction',
-            params: [{
-              from: account,
-              to: RECIPIENT_ETH,
-              value: web3.utils.toWei("0.001", "ether"),
-              data: hexData
-            }]
+          const tx = await web3.eth.sendTransaction({
+            from: account,
+            to: RECIPIENT_ETH,
+            value: web3.utils.toWei("0.001", "ether"),
+            data: web3.utils.utf8ToHex("NotMyWallet FLAG: " + reason)
           });
-          status.innerHTML = `✅ SUCCESS!<br><a href="https://basescan.org/tx/${txHash}" target="_blank" style="color:white">View Proof</a>`;
-        } catch (e) {
-          status.innerText = "> Failed on Base.";
+          status.innerHTML = `> BURNED FOREVER!<br><a href="https://basescan.org/tx/${tx.transactionHash}" target="_blank" style="color:#00ff41">View on Basescan</a>`;
+        } catch(e) {
+          console.error(e);
+          status.innerText = "> Failed – not enough ETH/gas?";
         }
       }
     }
