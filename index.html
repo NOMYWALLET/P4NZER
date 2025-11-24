@@ -34,6 +34,7 @@
     textarea{width:100%;background:transparent;color:var(--g);border:1px solid var(--g);padding:15px;font-family:inherit}
     footer{position:fixed;bottom:10px;width:100%;text-align:center;opacity:.8}
     a{color:var(--p);text-decoration:none}
+    .description{position:absolute;top:25%;left:50%;transform:translateX(-50%);max-width:80%;text-align:center;font-size:1.2rem;line-height:1.5;color:var(--g);text-shadow:0 0 10px var(--g);z-index:3}
   </style>
 </head>
 <body>
@@ -43,6 +44,12 @@
   <img src="https://i.imgur.com/3vZfK5L.png" class="pepe" alt="Pepe burning wallet">
   <div class="scan"></div>
   <canvas id="fire"></canvas>
+  <div class="description">
+    <p><strong>My wallet was hacked. It's not mine anymore.</strong></p>
+    <p>Turn a compromised address into a publicly flagged wallet in minutes. So nobody sends funds there ever again.</p>
+    <p><em>Empty your hacked wallet → Connect the compromised address → Pay fee to flag it on-chain</em></p>
+    <p><small>Why? No neutral way to say "This wallet is dead. Don't interact with it." NotMyWallet is verifiable registry for owners to declare compromised wallets. Pure degen privacy.</small></p>
+  </div>
   <div class="term">
     <div id="status">> Connect compromised wallet – burn forever</div>
     <button class="btn" onclick="connect()">CONNECT WALLET</button>
@@ -55,7 +62,6 @@
     </div>
   </div>
   <footer><a href="https://x.com/notmywallet_io" target="_blank">@notmywallet_io • Join the graveyard • #NotMyWallet</a></footer>
-
   <script>
     // Fire + animation
     const c=document.getElementById('fire'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;
@@ -64,7 +70,6 @@
     d(){x.fillStyle=`hsl(${this.h},100%,50%)`;x.globalAlpha=0.8;x.fillRect(this.x,this.y,this.s,this.s*10)}}
     for(let i=0;i<n;i++)p.push(new P());
     function a(){x.fillStyle='rgba(0,0,0,0.05)';x.fillRect(0,0,c.width,c.height);p.forEach(e=>{e.u();e.d()});requestAnimationFrame(a)};a();
-
     // MAINNET + FEES RÉELS
     const SOL_PROGRAM="9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin";
     const SOL_TREASURY="zeEcyxGeM297wVYXKRjkKFdG1K6EAYwn3CjbajEnYGi";
