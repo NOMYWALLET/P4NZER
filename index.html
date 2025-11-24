@@ -1,1036 +1,447 @@
-<!DOCTYPE html>
+import base64
+import os
+from google.colab import files
+
+# 1. Fonction pour convertir les images en Base64
+def get_image_base64(filename):
+    if os.path.exists(filename):
+        with open(filename, "rb") as image_file:
+            return "data:image/jpeg;base64," + base64.b64encode(image_file.read()).decode('utf-8')
+    return "" # Retourne vide si l'image n'est pas trouvée (ne devrait pas arriver ici)
+
+# 2. Encodage des images uploadées
+# Assure-toi que les noms de fichiers correspondent exactement à ceux uploadés
+logo_b64 = get_image_base64("logo nmw.jpg")
+pepe_b64 = get_image_base64("image (10).jpg")
+
+# 3. Le Code HTML Complet (Intégrant les images et la logique Smart Contract)
+html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NotMyWallet – Flag Your Hacked Wallet</title>
 
-  <!-- Solana / Web3 -->
   <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/web3@4.2.0/dist/web3.min.js"></script>
 
-  <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <style>
-    :root {
+    :root {{
       --bg: #020617;
-      --card-bg: rgba(15, 23, 42, 0.92);
-      --border: rgba(148, 163, 184, 0.6);
+      --card-bg: rgba(15, 23, 42, 0.95);
+      --border: rgba(34, 197, 94, 0.3);
       --text: #e5e7eb;
-      --muted: #9ca3af;
-      --accent: #22c55e;
-      --accent-soft: rgba(34, 197, 94, 0.15);
-      --accent-2: #a855f7;
-      --danger: #f97316;
-      --danger-soft: rgba(248, 113, 113, 0.18);
-      --shadow-strong: 0 0 40px rgba(34, 197, 94, 0.4);
-      --radius-lg: 18px;
-      --radius-xl: 26px;
-    }
+      --muted: #94a3b8;
+      --accent: #22c55e; /* Green Pepe */
+      --accent-glow: rgba(34, 197, 94, 0.5);
+      --accent-2: #a855f7; /* Purple Degen */
+      --danger: #ef4444;
+      --radius-xl: 24px;
+    }}
 
-    * { margin:0; padding:0; box-sizing:border-box; }
+    * {{ margin:0; padding:0; box-sizing:border-box; }}
 
-    body {
+    body {{
       min-height: 100vh;
-      background:
-        radial-gradient(circle at top, rgba(34, 197, 94, 0.18), transparent 55%),
-        radial-gradient(circle at bottom, rgba(168, 85, 247, 0.2), transparent 55%),
-        var(--bg);
+      background-color: var(--bg);
       color: var(--text);
-      font-family: "Space Grotesk", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: "Space Grotesk", sans-serif;
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
-    }
+    }}
 
-    #fire {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-    }
+    /* CANVA FIRE BACKGROUND */
+    #fire {{
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      opacity: 0.6; mix-blend-mode: screen;
+    }}
 
-    .bg-layer {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
+    /* UI LAYOUT */
+    .page {{
+      position: relative; z-index: 10;
+      max-width: 1000px; margin: 0 auto;
+      padding: 20px; width: 100%;
+      display: flex; flex-direction: column; gap: 40px;
+    }}
 
-    .bg-symbols {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      justify-content: space-around;
-      opacity: 0.25;
-      mix-blend-mode: screen;
-      font-family: "Space Grotesk", monospace;
-      font-size: 0.75rem;
-      color: #facc15;
-    }
+    /* HEADER */
+    header {{
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0;
+    }}
+    .brand {{ display: flex; align-items: center; gap: 15px; }}
+    .logo {{
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: url('{logo_b64}') center/cover no-repeat;
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }}
+    .brand-text h1 {{
+      font-size: 1.5rem; font-weight: 800; text-transform: uppercase;
+      background: linear-gradient(90deg, var(--accent), #fff, var(--accent-2));
+      -webkit-background-clip: text; color: transparent;
+      letter-spacing: -1px;
+    }}
+    .brand-tagline {{ font-size: 0.8rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }}
 
-    .symbol-column {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      animation: drift 12s linear infinite alternate;
-    }
-    .symbol-column:nth-child(2) { animation-duration: 15s; animation-direction: alternate-reverse; color:#22c55e; }
-    .symbol-column:nth-child(3) { animation-duration: 18s; color:#a855f7; }
-    .symbol { opacity:0.5; }
+    .share-btn {{
+      background: rgba(255,255,255,0.05); border: 1px solid var(--muted);
+      color: #fff; padding: 8px 20px; border-radius: 50px;
+      cursor: pointer; transition: 0.3s; font-family: inherit; text-transform: uppercase; font-size: 0.8rem;
+    }}
+    .share-btn:hover {{ background: var(--accent); border-color: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent-glow); }}
 
-    @keyframes drift {
-      0% { transform: translateY(10%); }
-      100% { transform: translateY(-25%); }
-    }
+    /* MAIN CONTENT */
+    .main-grid {{
+      display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
+      align-items: center;
+    }}
+    @media(max-width: 850px) {{ .main-grid {{ grid-template-columns: 1fr; }} }}
 
-    .bg-masks { position:absolute; inset:0; pointer-events:none; }
-    .mask-emoji {
-      position:absolute;
-      font-size:110px;
-      filter:blur(2px);
-      opacity:0.13;
-      mix-blend-mode:screen;
-    }
-    .mask-emoji:nth-child(1){ top:10%; left:-10px; transform:rotate(-10deg); color:#22c55e; }
-    .mask-emoji:nth-child(2){ top:45%; right:-5%; transform:rotate(8deg); color:#a855f7; }
-    .mask-emoji:nth-child(3){ bottom:-5%; left:20%; transform:rotate(3deg); color:#22c55e; }
+    /* LEFT COLUMN (HERO) */
+    .hero-content {{ display: flex; flex-direction: column; gap: 20px; }}
+    .hero-pill {{
+      display: inline-block; padding: 5px 12px; border-radius: 20px;
+      border: 1px solid var(--accent); color: var(--accent);
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;
+      width: fit-content; background: rgba(34, 197, 94, 0.1);
+    }}
+    .hero-title {{
+      font-size: 3.5rem; line-height: 1; font-weight: 800;
+      text-transform: uppercase;
+      text-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+    }}
+    .hero-title span {{ color: var(--accent); }}
+    .hero-desc {{ font-size: 1.1rem; color: var(--muted); line-height: 1.6; }}
+    .hero-desc strong {{ color: #fff; text-decoration: underline decoration-color var(--danger); }}
 
-    .page{
-      position:relative;
-      z-index:1;
-      max-width:1120px;
-      margin:0 auto;
-      padding:24px 16px 40px;
-      display:flex;
-      flex-direction:column;
-      gap:28px;
-    }
+    /* RIGHT COLUMN (VISUAL) */
+    .visual-wrapper {{ position: relative; }}
+    .pepe-img {{
+      width: 100%; border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      box-shadow: 0 0 50px rgba(0,0,0,0.8);
+      background: url('{pepe_b64}') center/cover no-repeat;
+      aspect-ratio: 1/1.2;
+    }}
+    .float-badge {{
+      position: absolute; bottom: 20px; right: -10px;
+      background: #000; border: 1px solid var(--accent);
+      padding: 8px 16px; border-radius: 12px;
+      color: var(--accent); font-weight: bold; text-transform: uppercase;
+      box-shadow: 0 10px 30px #000;
+      transform: rotate(-5deg);
+    }}
 
-    header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:16px;
-    }
+    /* ACTION PANEL */
+    .action-panel {{
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 30px;
+      box-shadow: 0 0 60px rgba(34, 197, 94, 0.1);
+      margin-top: 20px;
+    }}
+    .panel-header {{ margin-bottom: 20px; border-bottom: 1px dashed var(--muted); padding-bottom: 15px; }}
+    .panel-header h2 {{ font-size: 1.5rem; margin-bottom: 5px; }}
+    .panel-header p {{ color: var(--muted); font-size: 0.9rem; }}
 
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
+    .status-box {{
+      background: #000; font-family: monospace; color: var(--accent);
+      padding: 15px; border-radius: 8px; border: 1px solid #333;
+      margin-bottom: 20px; min-height: 50px; display: flex; align-items: center;
+    }}
+    
+    .btn-group {{ display: flex; gap: 10px; flex-wrap: wrap; }}
+    .btn {{
+      flex: 1; padding: 15px; border-radius: 12px; border: none;
+      font-family: inherit; font-weight: 700; text-transform: uppercase;
+      cursor: pointer; transition: 0.2s; font-size: 1rem;
+    }}
+    .btn-connect {{
+      background: #fff; color: #000;
+    }}
+    .btn-connect:hover {{ background: var(--accent); box-shadow: 0 0 20px var(--accent); }}
+    
+    .btn-flag {{
+      background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger);
+      opacity: 0.5; cursor: not-allowed;
+    }}
+    .btn-flag.active {{ opacity: 1; cursor: pointer; background: var(--danger); color: #fff; }}
+    .btn-flag.active:hover {{ box-shadow: 0 0 30px var(--danger); }}
 
-    .logo{
-      width:52px;
-      height:52px;
-      border-radius:999px;
-      /* TODO: remplace l’URL ci-dessous par l’URL publique de ton logo */
-      background:url("https://yourcdn.com/notmywallet-logo.png") center/cover no-repeat;
-      box-shadow:0 0 22px rgba(34,197,94,.7);
-      border:1px solid rgba(34,197,94,.8);
-      flex-shrink:0;
-    }
+    /* FORM AREA */
+    .flag-form {{
+      margin-top: 20px; padding: 20px; background: rgba(0,0,0,0.3);
+      border-radius: 12px; display: none; flex-direction: column; gap: 15px;
+    }}
+    .chain-info {{ display: flex; justify-content: space-between; font-size: 0.85rem; color: #fff; }}
+    .chain-info span {{ color: var(--accent); }}
+    
+    textarea {{
+      width: 100%; background: #0f172a; border: 1px solid #333;
+      color: var(--accent); padding: 10px; border-radius: 8px;
+      font-family: monospace; resize: vertical; min-height: 80px;
+    }}
+    .fees {{ font-size: 0.75rem; color: var(--muted); text-align: right; }}
 
-    .brand-text{ display:flex; flex-direction:column; gap:2px; }
-    .brand-name{
-      font-size:1.3rem;
-      font-weight:700;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      background:linear-gradient(90deg,#22c55e,#a855f7,#22c55e);
-      -webkit-background-clip:text;
-      background-clip:text;
-      color:transparent;
-    }
-    .brand-tagline{
-      font-size:.8rem;
-      text-transform:uppercase;
-      letter-spacing:.14em;
-      color:var(--muted);
-    }
+    footer {{
+      margin-top: 60px; border-top: 1px solid #333; padding-top: 20px;
+      text-align: center; color: var(--muted); font-size: 0.9rem; padding-bottom: 20px;
+    }}
+    footer a {{ color: var(--accent); text-decoration: none; }}
 
-    .share-btn{
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,.6);
-      padding:10px 18px;
-      background:rgba(15,23,42,.9);
-      color:#e5e7eb;
-      font-size:.85rem;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      cursor:pointer;
-      transition:.2s ease;
-      text-transform:uppercase;
-      letter-spacing:.12em;
-      white-space:nowrap;
-    }
-    .share-btn span{ font-size:1rem; }
-    .share-btn:hover{
-      border-color:#e5e7eb;
-      transform:translateY(-1px);
-      box-shadow:0 10px 30px rgba(15,23,42,.8);
-    }
-
-    @media (max-width:640px){
-      header{ flex-direction:column; align-items:flex-start; }
-    }
-
-    .main{
-      display:grid;
-      grid-template-columns:minmax(0,1.45fr) minmax(0,1.1fr);
-      gap:24px;
-      align-items:center;
-    }
-    @media (max-width:880px){ .main{ grid-template-columns:minmax(0,1fr); } }
-
-    .hero{
-      display:flex;
-      flex-direction:column;
-      gap:16px;
-      position:relative;
-    }
-
-    .hero-pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:6px 12px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,.6);
-      background:radial-gradient(circle at left,rgba(34,197,94,.2),transparent);
-      font-size:.78rem;
-      text-transform:uppercase;
-      letter-spacing:.12em;
-      color:var(--muted);
-      margin-bottom:6px;
-    }
-    .hero-pill span{
-      display:inline-flex;
-      width:6px; height:6px;
-      border-radius:999px;
-      background:#22c55e;
-      box-shadow:0 0 14px rgba(34,197,94,.9);
-    }
-
-    .glitch-title{
-      font-size:clamp(2.4rem,6vw,3.4rem);
-      font-weight:800;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      position:relative;
-      display:inline-block;
-      line-height:1.1;
-    }
-    .glitch-title span{
-      background:linear-gradient(90deg,#22c55e,#a855f7,#22c55e);
-      -webkit-background-clip:text;
-      background-clip:text;
-      color:transparent;
-    }
-    .glitch-title::before,
-    .glitch-title::after{
-      content:"NotMyWallet";
-      position:absolute;
-      inset:0;
-      mix-blend-mode:screen;
-      opacity:.32;
-      pointer-events:none;
-    }
-    .glitch-title::before{
-      transform:translate(-1px,1px);
-      color:#22c55e;
-      text-shadow:-2px 0 #22c55e;
-      animation:glitchShift 1.9s infinite;
-    }
-    .glitch-title::after{
-      transform:translate(1px,-1px);
-      color:#a855f7;
-      text-shadow:2px 0 #a855f7;
-      animation:glitchShiftAlt 2.1s infinite;
-    }
-    @keyframes glitchShift{
-      0%,100%{transform:translate(-1px,1px);}
-      20%{transform:translate(-2px,-1px);}
-      40%{transform:translate(1px,0);}
-      60%{transform:translate(-1px,2px);}
-      80%{transform:translate(2px,-2px);}
-    }
-    @keyframes glitchShiftAlt{
-      0%,100%{transform:translate(1px,-1px);}
-      20%{transform:translate(2px,1px);}
-      40%{transform:translate(-1px,0);}
-      60%{transform:translate(1px,-2px);}
-      80%{transform:translate(-2px,2px);}
-    }
-
-    .hero-sub{
-      font-size:1.05rem;
-      color:var(--muted);
-      max-width:520px;
-      line-height:1.5;
-    }
-    .hero-sub strong{ color:#e5e7eb; }
-    .hero-sub em{ font-style:normal; color:#bbf7d0; }
-
-    .steps{
-      margin-top:12px;
-      border-radius:var(--radius-lg);
-      border:1px dashed rgba(148,163,184,.6);
-      padding:12px 14px;
-      background:linear-gradient(135deg,rgba(15,23,42,.95),rgba(15,23,42,.75));
-      font-size:.9rem;
-      color:var(--muted);
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    .steps-title{
-      font-size:.8rem;
-      text-transform:uppercase;
-      letter-spacing:.14em;
-      color:#9ca3af;
-      margin-bottom:2px;
-    }
-    .steps ol{ padding-left:18px; display:flex; flex-direction:column; gap:4px; }
-    .steps li{ line-height:1.4; }
-
-    .hero-meta{
-      margin-top:10px;
-      font-size:.8rem;
-      color:var(--muted);
-    }
-    .hero-meta em{ color:#e5e7eb; font-style:normal; }
-    .hero-meta strong{ color:#fed7aa; }
-
-    .illustration-wrapper{
-      margin-top:10px;
-      max-width:360px;
-      position:relative;
-    }
-    @media (max-width:880px){ .illustration-wrapper{ max-width:320px; } }
-
-    .pepe{
-      width:100%;
-      border-radius:var(--radius-xl);
-      border:1px solid rgba(34,197,94,.6);
-      box-shadow:0 20px 40px rgba(15,23,42,.9);
-      background:#020617;
-      display:block;
-      animation:floatPepe 7s ease-in-out infinite;
-      object-fit:cover;
-    }
-    .pepe-tag{
-      position:absolute;
-      bottom:12px;
-      right:12px;
-      padding:4px 9px;
-      border-radius:999px;
-      font-size:.72rem;
-      text-transform:uppercase;
-      letter-spacing:.11em;
-      background:rgba(15,23,42,.9);
-      border:1px solid rgba(148,163,184,.7);
-      color:#e5e7eb;
-    }
-    @keyframes floatPepe{
-      0%,100%{transform:translateY(0) rotate(0deg);}
-      50%{transform:translateY(-6px) rotate(2deg);}
-    }
-
-    .panel{
-      background:var(--card-bg);
-      border-radius:var(--radius-xl);
-      padding:20px 20px 18px;
-      border:1px solid var(--border);
-      box-shadow:var(--shadow-strong);
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-      backdrop-filter:blur(18px);
-    }
-
-    .panel-header{ display:flex; flex-direction:column; gap:4px; }
-    .panel-title{
-      font-size:1.1rem;
-      font-weight:600;
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-    .panel-title-pill{
-      font-size:.7rem;
-      padding:3px 8px;
-      border-radius:999px;
-      text-transform:uppercase;
-      letter-spacing:.12em;
-      background:var(--accent-soft);
-      color:#bbf7d0;
-      border:1px solid rgba(34,197,94,.6);
-    }
-    .panel-sub{
-      font-size:.86rem;
-      color:var(--muted);
-      line-height:1.45;
-    }
-
-    .status{
-      font-family:"Space Grotesk",monospace;
-      font-size:.85rem;
-      padding:8px 10px;
-      border-radius:10px;
-      border:1px solid rgba(148,163,184,.7);
-      background:rgba(15,23,42,.9);
-      color:#e5e7eb;
-      min-height:32px;
-    }
-    .status span{ color:#22c55e; }
-    .status a{ color:var(--accent-2); text-decoration:none; }
-    .status a:hover{ text-decoration:underline; }
-
-    .btn-row{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:4px;
-    }
-    .btn{
-      flex:1;
-      min-width:140px;
-      padding:11px 14px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,.8);
-      background:radial-gradient(circle at top left,rgba(34,197,94,.16),transparent);
-      color:#e5e7eb;
-      font-size:.85rem;
-      font-weight:600;
-      text-transform:uppercase;
-      letter-spacing:.13em;
-      cursor:pointer;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      transition:.2s ease;
-    }
-    .btn:hover{
-      transform:translateY(-1px);
-      box-shadow:0 10px 28px rgba(15,23,42,.9);
-      border-color:#e5e7eb;
-    }
-    .btn-primary{
-      background:linear-gradient(135deg,#22c55e,#16a34a);
-      border-color:rgba(34,197,94,.9);
-      color:#020617;
-      box-shadow:0 0 30px rgba(34,197,94,.65);
-    }
-    .btn-primary:hover{ filter:brightness(1.05); }
-    .btn-flag{
-      background:var(--danger-soft);
-      border-color:rgba(248,113,113,.6);
-      color:#fed7aa;
-    }
-    .btn-flag.disabled{
-      opacity:.4;
-      cursor:default;
-      box-shadow:none;
-      filter:grayscale(.3);
-    }
-
-    .form{
-      margin-top:8px;
-      border-radius:var(--radius-lg);
-      border:1px dashed rgba(148,163,184,.7);
-      padding:10px 12px;
-      background:linear-gradient(135deg,rgba(15,23,42,.95),rgba(15,23,42,.85));
-      display:none;
-      flex-direction:column;
-      gap:8px;
-      font-size:.86rem;
-      color:var(--muted);
-    }
-    .form-row{
-      display:flex;
-      justify-content:space-between;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-    .form-row span{
-      font-family:"Space Grotesk",monospace;
-      font-size:.8rem;
-      color:#e5e7eb;
-    }
-    textarea{
-      width:100%;
-      min-height:70px;
-      resize:vertical;
-      border-radius:10px;
-      border:1px solid rgba(148,163,184,.8);
-      background:rgba(15,23,42,.95);
-      color:#e5e7eb;
-      padding:8px 9px;
-      font-family:"Space Grotesk",monospace;
-      font-size:.85rem;
-      outline:none;
-    }
-    textarea::placeholder{ color:rgba(148,163,184,.8); }
-    .fee-line{
-      font-size:.78rem;
-      color:var(--muted);
-      line-height:1.4;
-    }
-    .fee-line code{
-      font-family:"Space Grotesk",monospace;
-      font-size:.78rem;
-      color:#e5e7eb;
-      background:rgba(15,23,42,.9);
-      padding:2px 5px;
-      border-radius:6px;
-      border:1px solid rgba(55,65,81,.9);
-    }
-
-    .info{
-      margin-top:8px;
-      display:flex;
-      flex-direction:column;
-      gap:18px;
-    }
-    .info-header{ display:flex; flex-direction:column; gap:6px; }
-    .info-title{
-      font-size:.9rem;
-      text-transform:uppercase;
-      letter-spacing:.16em;
-      color:var(--muted);
-    }
-    .info-sub{
-      font-size:.95rem;
-      color:#e5e7eb;
-      max-width:640px;
-    }
-    .info-sub strong{ color:#bbf7d0; }
-
-    .info-grid{
-      display:grid;
-      grid-template-columns:minmax(0,1.4fr) minmax(0,1.1fr);
-      gap:18px;
-    }
-    @media (max-width:880px){ .info-grid{ grid-template-columns:minmax(0,1fr); } }
-
-    .info-card{
-      border-radius:var(--radius-lg);
-      border:1px solid rgba(51,65,85,.9);
-      background:rgba(15,23,42,.96);
-      padding:14px 14px 13px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .info-label{
-      font-size:.78rem;
-      text-transform:uppercase;
-      letter-spacing:.14em;
-      color:var(--muted);
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-    }
-    .info-label span{
-      width:6px; height:6px;
-      border-radius:999px;
-      background:var(--accent);
-      box-shadow:0 0 10px rgba(34,197,94,.9);
-    }
-    .info-card h3{ font-size:.98rem; font-weight:600; }
-    .info-card p,
-    .info-card li{
-      font-size:.84rem;
-      color:var(--muted);
-      line-height:1.45;
-    }
-    .info-card ul{
-      padding-left:16px;
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-    }
-    .faq-item + .faq-item{
-      border-top:1px dashed rgba(55,65,81,.9);
-      padding-top:8px;
-      margin-top:6px;
-    }
-    .faq-q{ font-size:.86rem; font-weight:600; color:#e5e7eb; }
-    .faq-a{ font-size:.84rem; color:var(--muted); margin-top:2px; }
-
-    .disclaimer{
-      margin-top:6px;
-      border-radius:var(--radius-lg);
-      border:1px solid rgba(248,113,113,.55);
-      background:linear-gradient(135deg,rgba(30,64,175,.9),rgba(127,29,29,.92));
-      padding:10px 13px;
-      font-size:.78rem;
-      color:#fee2e2;
-      line-height:1.5;
-    }
-    .disclaimer-title{
-      font-size:.78rem;
-      text-transform:uppercase;
-      letter-spacing:.16em;
-      margin-bottom:4px;
-      display:flex;
-      align-items:center;
-      gap:6px;
-    }
-    .disclaimer-title span{
-      width:8px; height:8px;
-      border-radius:999px;
-      background:#fecaca;
-      box-shadow:0 0 12px rgba(254,226,226,.9);
-    }
-
-    .bottom-footer{
-      margin-top:10px;
-      font-size:.78rem;
-      color:var(--muted);
-      text-align:center;
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      align-items:center;
-    }
-    .bottom-footer-main a{
-      color:var(--accent-2);
-      text-decoration:none;
-    }
-    .bottom-footer-main a:hover{ text-decoration:underline; }
-
-    .social-links{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-size:.86rem;
-    }
-    .social-links a{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,.7);
-      background:rgba(15,23,42,.95);
-      color:#e5e7eb;
-      text-decoration:none;
-      font-size:.78rem;
-      text-transform:uppercase;
-      letter-spacing:.12em;
-    }
-    .social-links a span{ font-size:1rem; }
-    .social-links a:hover{
-      border-color:#e5e7eb;
-      box-shadow:0 8px 22px rgba(15,23,42,.9);
-      transform:translateY(-1px);
-    }
   </style>
 </head>
 <body>
+
   <canvas id="fire"></canvas>
 
-  <div class="bg-layer">
-    <div class="bg-symbols">
-      <div class="symbol-column">
-        <div class="symbol">0xPH1SH</div>
-        <div class="symbol">Ξ / REKT</div>
-        <div class="symbol">SCAM ▒▒▒</div>
-        <div class="symbol">0xDEAD</div>
-        <div class="symbol">☠ wallet</div>
-        <div class="symbol">DRAINED</div>
-      </div>
-      <div class="symbol-column">
-        <div class="symbol">⚠ compromised</div>
-        <div class="symbol">₿ dust</div>
-        <div class="symbol">SCAM AIRDROP</div>
-        <div class="symbol">CEX LEAK</div>
-        <div class="symbol">SIM-SWAP</div>
-        <div class="symbol">🔥 blacklist</div>
-      </div>
-      <div class="symbol-column">
-        <div class="symbol">0xNOTMY</div>
-        <div class="symbol">Ξ wallet</div>
-        <div class="symbol">MALWARE</div>
-        <div class="symbol">FAKE BOT</div>
-        <div class="symbol">PHISH LINK</div>
-        <div class="symbol">SCAMMER FARM</div>
-      </div>
-    </div>
-    <div class="bg-masks">
-      <div class="mask-emoji">🎭</div>
-      <div class="mask-emoji">🎭</div>
-      <div class="mask-emoji">🎭</div>
-    </div>
-  </div>
-
   <div class="page">
+    
     <header>
       <div class="brand">
         <div class="logo"></div>
         <div class="brand-text">
-          <div class="brand-name">NotMyWallet</div>
-          <div class="brand-tagline">Turn hacked wallets into dead wallets</div>
+          <h1>NotMyWallet</h1>
+          <div class="brand-tagline">Registry of Dead Wallets</div>
         </div>
       </div>
-      <button class="share-btn" onclick="share()">
-        <span>✺</span> Share on X
-      </button>
+      <button class="share-btn" onclick="share()">💀 Share on X</button>
     </header>
 
-    <main class="main">
-      <section class="hero">
-        <div class="hero-pill">
-          <span></span> Compromised wallets registry
-        </div>
-        <h1 class="glitch-title"><span>NotMyWallet</span></h1>
-        <p class="hero-sub">
-          <strong>My wallet was hacked. It’s not mine anymore.</strong><br />
-          This address is <em>dead</em>. Flag it on-chain so nobody in their right mind sends funds
-          there ever again – especially after <em>phishing, fake bots, dusting or scam airdrops</em>.
-        </p>
-
-        <div class="steps">
-          <div class="steps-title">How it works</div>
-          <ol>
-            <li>Empty your hacked wallet (move funds to a new, safe address).</li>
-            <li>Connect the <em>compromised</em> address with Phantom or MetaMask.</li>
-            <li>Pay a small fee to flag it on-chain as <em>compromised forever</em>.</li>
-          </ol>
-        </div>
-
-        <p class="hero-meta">
-          No seed phrase. No private key sharing. Just an on-chain
-          <em>“Not my wallet anymore”</em> statement that anyone can verify –
-          <strong>for scammers it’s a red flag, for users it’s a loud warning.</strong>
-        </p>
-
-        <div class="illustration-wrapper">
-          <!-- TODO: remplace l’URL ci-dessous par l’URL publique de ton visuel pepe -->
-          <img
-            src="https://yourcdn.com/notmywallet-hero-pepe.jpg"
-            alt="Cyber degen burning a hacked wallet"
-            class="pepe"
-          />
-          <div class="pepe-tag">Degen privacy utility</div>
-        </div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            Burn your hacked wallet
-            <span class="panel-title-pill">On-chain fee</span>
-          </div>
-          <p class="panel-sub">
-            Connect the compromised address and pay the burn-fee. This transaction is a public,
-            on-chain “this wallet is compromised” signal. Registry integrations can read it and
-            treat that address as toxic forever.
-          </p>
-        </div>
-
-        <div id="status" class="status">
-          &gt; <span>Waiting for compromised wallet connection…</span>
-        </div>
-
-        <div class="btn-row">
-          <button class="btn btn-primary" onclick="connect()">
-            Connect compromised wallet
-          </button>
-          <button
-            class="btn btn-flag disabled"
-            id="flagBtn"
-            onclick="flagCompromised()"
-            disabled
-          >
-            ⚠ Flag as compromised
-          </button>
-        </div>
-
-        <div class="form" id="form">
-          <div class="form-row">
-            <div>Chain: <span id="chain">—</span></div>
-            <div>Address: <span id="addr">—</span></div>
-          </div>
-          <div>
-            <label for="reason" style="font-size: 0.8rem; color: var(--muted);"
-              >Reason (public, optional text – not on-chain yet)</label
-            >
-            <textarea
-              id="reason"
-              placeholder="hacked, drained after phishing, fake bot, CEX leak, dusting, etc."
-            ></textarea>
-          </div>
-          <p class="fee-line">
-            Fee: <strong>0.01&nbsp;SOL</strong> on Solana → <code>zeEcyxGeM…</code><br />
-            or <strong>0.001&nbsp;ETH</strong> on Base → <code>0xb45464…</code>
-          </p>
-        </div>
-      </section>
-    </main>
-
-    <section class="info">
-      <div class="info-header">
-        <div class="info-title">More details</div>
-        <p class="info-sub">
-          NotMyWallet is the place where <strong>rekt wallets go to die</strong>. It won’t refund
-          you, but it makes sure everyone sees that this address is
-          <strong>phishing / scam / compromised</strong> before interacting with it again.
+    <div class="main-grid">
+      <div class="hero-content">
+        <div class="hero-pill">⚠️ On-Chain Flagging Protocol</div>
+        <h1 class="hero-title">Burn It.<br><span>Flag It.</span><br>Leave It.</h1>
+        <p class="hero-desc">
+          Your wallet was hacked? <strong>Kill it properly.</strong><br>
+          Don't just abandon it. Leave an immutable on-chain record that this address is COMPROMISED so no one funds it ever again.
         </p>
       </div>
 
-      <div class="info-grid">
-        <article class="info-card">
-          <div class="info-label"><span></span> What happens on-chain today?</div>
-          <h3>Simple, verifiable fee transaction</h3>
-          <ul>
-            <li>You connect the compromised address (no custody, no login).</li>
-            <li>You send a small fee from that wallet to the NotMyWallet treasury.</li>
-            <li>
-              That transaction is a <strong>public marker</strong> that the owner considers this
-              wallet compromised.
-            </li>
-            <li>
-              Indexers, bots and explorers can track this pattern and treat the address as
-              <strong>toxic</strong>.
-            </li>
-          </ul>
-        </article>
+      <div class="visual-wrapper">
+        <div class="pepe-img"></div>
+        <div class="float-badge">RIP Wallet ☠️</div>
+      </div>
+    </div>
 
-        <article class="info-card">
-          <div class="info-label"><span></span> FAQ & typical flags</div>
-
-          <div class="faq-item">
-            <div class="faq-q">Does this recover my stolen funds?</div>
-            <div class="faq-a">
-              No. This is not a recovery tool. It’s a <strong>public warning layer</strong> so future
-              deposits don’t get farmed by the attacker using your old address.
-            </div>
-          </div>
-
-          <div class="faq-item">
-            <div class="faq-q">When should I flag a wallet?</div>
-            <div class="faq-a">
-              Typical use cases:
-              <ul>
-                <li>Phishing link / fake airdrop / scam bot drained your wallet.</li>
-                <li>Your address leaked on a CEX / database and started getting targeted.</li>
-                <li>Malware, screen-share, SIM-swap or device compromise.</li>
-                <li>You used the address for shady tools and don’t trust it anymore.</li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="faq-item">
-            <div class="faq-q">Can anyone flag someone else’s wallet?</div>
-            <div class="faq-a">
-              Only the wallet that actually controls the private key can sign and pay the fee.
-              If the attacker still has control, they could also send it – but that still tells the
-              world this address is toxic.
-            </div>
-          </div>
-        </article>
+    <div class="action-panel">
+      <div class="panel-header">
+        <h2>Flag Compromised Wallet</h2>
+        <p>This writes a permanent "Reason" note on the blockchain transaction history.</p>
       </div>
 
-      <div class="disclaimer">
-        <div class="disclaimer-title">
-          <span></span> Important disclaimer
-        </div>
-        <p>
-          NotMyWallet is an experimental, on-chain registry concept for compromised addresses. It
-          does not block scammers, freeze funds, or guarantee that third-party services will respect
-          the flag. Using this tool does <strong>not</strong> replace proper OPSEC, KYC, legal
-          recourse or professional security audits. Always move your funds to a fresh wallet you
-          control, triple-check addresses, and never share your seed phrase or private keys with
-          anyone.
-        </p>
+      <div id="status" class="status-box">> Waiting for connection...</div>
+
+      <div class="btn-group">
+        <button class="btn btn-connect" onclick="connect()">Connect Wallet</button>
+        <button id="flagBtn" class="btn btn-flag" onclick="executeFlag()">🔥 BURN & FLAG</button>
       </div>
 
-      <div class="bottom-footer">
-        <div class="bottom-footer-main">
-          Built for the people who got rekt and still want to protect the next ones —
-          <a href="https://x.com/notmywallet_io" target="_blank">@notmywallet_io</a>
-          • #NotMyWallet
+      <div id="form" class="flag-form">
+        <div class="chain-info">
+          <div>Chain: <span id="chainDisplay">--</span></div>
+          <div>Addr: <span id="addrDisplay">--</span></div>
         </div>
-        <div class="social-links">
-          <a href="https://x.com/notmywallet_io" target="_blank">
-            <span>𝕏</span> Follow on X
-          </a>
-          <a href="https://github.com/notmywallet" target="_blank">
-            <span>🐙</span> View on GitHub
-          </a>
-        </div>
+        <label style="font-size:0.8rem; color:#888;">PUBLIC REASON (Written On-Chain):</label>
+        <textarea id="reason" placeholder="EX: HACKED BY PHISHING LINK. DO NOT SEND FUNDS."></textarea>
+        <div class="fees">Fee: 0.001 ETH (Base) or 0.005 SOL (Solana) + Gas</div>
       </div>
-    </section>
+    </div>
+
+    <footer>
+      Built for the Rekts. <a href="https://x.com/notmywallet_io" target="_blank">@notmywallet_io</a> • #NotMyWallet
+    </footer>
+
   </div>
 
   <script>
-    // FIRE BACKGROUND
-    const fireCanvas = document.getElementById("fire");
-    const fireCtx = fireCanvas.getContext("2d");
+    // --- 1. FIRE ANIMATION (Background) ---
+    const canvas = document.getElementById("fire");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
     let particles = [];
-    const PARTICLE_COUNT = 180;
+    class Particle {{
+        constructor() {{
+            this.x = Math.random() * canvas.width;
+            this.y = canvas.height + Math.random() * 100;
+            this.speed = 1 + Math.random() * 3;
+            this.radius = 1 + Math.random() * 3;
+            this.opacity = 1;
+            this.color = `hsl(${{120 + Math.random()*60}}, 100%, 50%)`; // Green fire for Pepe
+        }}
+        update() {{
+            this.y -= this.speed;
+            this.opacity -= 0.005;
+            if(this.opacity <= 0) this.reset();
+        }}
+        reset() {{
+            this.y = canvas.height + Math.random() * 100;
+            this.opacity = 1;
+            this.x = Math.random() * canvas.width;
+        }}
+        draw() {{
+            ctx.globalAlpha = this.opacity;
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+            ctx.fill();
+        }}
+    }}
+    for(let i=0; i<100; i++) particles.push(new Particle());
+    function animate() {{
+        ctx.clearRect(0,0,canvas.width, canvas.height);
+        particles.forEach(p => {{ p.update(); p.draw(); }});
+        requestAnimationFrame(animate);
+    }}
+    animate();
 
-    function resizeCanvas() {
-      fireCanvas.width = window.innerWidth;
-      fireCanvas.height = window.innerHeight;
-    }
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-
-    class FlameParticle {
-      constructor(){ this.reset(); }
-      reset(){
-        this.x = Math.random() * fireCanvas.width;
-        this.y = fireCanvas.height + Math.random() * 40;
-        this.size = 1 + Math.random() * 3;
-        this.vy = -1.5 - Math.random() * 3;
-        this.hue = 20 + Math.random() * 50;
-      }
-      update(){
-        this.y += this.vy;
-        this.x += Math.sin(Date.now() / 800 + this.y / 40) * 0.2;
-        if (this.y < -40) this.reset();
-      }
-      draw(){
-        fireCtx.globalAlpha = 0.8;
-        fireCtx.fillStyle = `hsl(${this.hue},100%,55%)`;
-        fireCtx.fillRect(this.x,this.y,this.size,this.size*8);
-      }
-    }
-
-    for (let i=0;i<PARTICLE_COUNT;i++) particles.push(new FlameParticle());
-    (function animateFire(){
-      fireCtx.fillStyle = "rgba(2,6,23,0.18)";
-      fireCtx.fillRect(0,0,fireCanvas.width,fireCanvas.height);
-      particles.forEach(p=>{ p.update(); p.draw(); });
-      requestAnimationFrame(animateFire);
-    })();
-
-    // WALLET LOGIC
-    const SOL_TREASURY = "zeEcyxGeM297wVYXKRjkKFdG1K6EAYwn3CjbajEnYGi";
-    const BASE_TREASURY = "0xb454640B8AA2a7974586c121c200541118d01982";
-
+    // --- 2. SMART CONTRACT / REGISTRY LOGIC ---
+    
+    const SOL_TREASURY = "zeEcyxGeM297wVYXKRjkKFdG1K6EAYwn3CjbajEnYGi"; // Treasury
+    const BASE_TREASURY = "0xb454640B8AA2a7974586c121c200541118d01982"; // Treasury
+    const MEMO_PROGRAM_ID = "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcQb"; // SPL Memo Program
+    
     let isSolana = false;
-    let account = null;
+    let userAccount = null;
 
-    const statusEl = document.getElementById("status");
+    // UI Elements
+    const statusBox = document.getElementById("status");
+    const formDiv = document.getElementById("form");
     const flagBtn = document.getElementById("flagBtn");
-    const formEl = document.getElementById("form");
-    const chainEl = document.getElementById("chain");
-    const addrEl = document.getElementById("addr");
+    
+    function log(msg) {{ statusBox.innerHTML = "> " + msg; }}
 
-    function setStatus(html){ statusEl.innerHTML = html; }
-    function enableFlagButton(){
-      flagBtn.disabled = false;
-      flagBtn.classList.remove("disabled");
-    }
+    async function connect() {{
+        log("Connecting...");
+        
+        // Try Phantom (Solana)
+        if (window.solana && window.solana.isPhantom) {{
+            try {{
+                await window.solana.connect();
+                userAccount = window.solana.publicKey.toString();
+                isSolana = true;
+                setupUI("Solana", userAccount);
+                return;
+            }} catch(e) {{ console.error(e); }}
+        }}
 
-    async function connect(){
-      try {
-        if (window.solana && window.solana.isPhantom) {
-          await window.solana.connect();
-          isSolana = true;
-          account = window.solana.publicKey.toString();
-          showConnected("Solana");
-          return;
-        }
-        if (window.ethereum) {
-          const web3 = new Web3(window.ethereum);
-          await window.ethereum.request({ method:"eth_requestAccounts" });
-          const accounts = await web3.eth.getAccounts();
-          account = accounts[0];
-          isSolana = false;
-          showConnected("Base");
-          return;
-        }
-        alert("You need Phantom (Solana) or MetaMask (EVM) to use NotMyWallet.");
-      } catch(e){
-        console.error(e);
-        setStatus("&gt; Connection cancelled or failed.");
-      }
-    }
+        // Try MetaMask (Base/EVM)
+        if (window.ethereum) {{
+            try {{
+                const web3 = new Web3(window.ethereum);
+                const accounts = await window.ethereum.request({{ method: 'eth_requestAccounts' }});
+                userAccount = accounts[0];
+                isSolana = false;
+                setupUI("Base (EVM)", userAccount);
+                return;
+            }} catch(e) {{ console.error(e); }}
+        }}
 
-    function showConnected(chainLabel){
-      const short = account.slice(0,8) + "…" + account.slice(-4);
-      chainEl.textContent = chainLabel;
-      addrEl.textContent = short;
-      formEl.style.display = "flex";
-      enableFlagButton();
-      setStatus(`&gt; Connected with <span>${chainLabel}</span> — address ${short}`);
-    }
+        log("Error: No Wallet Found. Install Phantom or MetaMask.");
+    }}
 
-    async function flagCompromised(){
-      if (!account) return;
-      setStatus("&gt; Sending burn-fee transaction...");
-      if (isSolana) await flagSolana(); else await flagBase();
-    }
+    function setupUI(chain, addr) {{
+        document.getElementById("chainDisplay").innerText = chain;
+        document.getElementById("addrDisplay").innerText = addr.substring(0,6) + "..." + addr.substring(addr.length-4);
+        formDiv.style.display = "flex";
+        flagBtn.classList.add("active");
+        log("Connected: " + chain);
+    }}
 
-    async function flagSolana(){
-      try{
-        const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
-        const fromPubkey = window.solana.publicKey;
-        const toPubkey = new solanaWeb3.PublicKey(SOL_TREASURY);
+    async function executeFlag() {{
+        const reason = document.getElementById("reason").value || "COMPROMISED WALLET - DO NOT USE";
+        
+        if(!userAccount) return log("Connect wallet first.");
+        
+        log("Initiating Flag Transaction...");
 
-        const tx = new solanaWeb3.Transaction().add(
-          solanaWeb3.SystemProgram.transfer({
-            fromPubkey,
-            toPubkey,
-            lamports: 10_000_000 // 0.01 SOL
-          })
-        );
+        if(isSolana) {{
+            // --- SOLANA: Transfer + Memo (The Registry Entry) ---
+            try {{
+                const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
+                const transaction = new solanaWeb3.Transaction();
+                
+                // 1. Fee Transfer
+                transaction.add(
+                    solanaWeb3.SystemProgram.transfer({{
+                        fromPubkey: window.solana.publicKey,
+                        toPubkey: new solanaWeb3.PublicKey(SOL_TREASURY),
+                        lamports: 5000000 // 0.005 SOL
+                    }})
+                );
 
-        const { signature } = await window.solana.signAndSendTransaction(tx);
-        await connection.confirmTransaction(signature, "confirmed");
+                // 2. THE REGISTRY LOGIC: Add a Memo Instruction
+                // This writes the 'reason' permanently on-chain in the tx logs
+                transaction.add(
+                    new solanaWeb3.TransactionInstruction({{
+                        keys: [{{ pubkey: window.solana.publicKey, isSigner: true, isWritable: true }}],
+                        programId: new solanaWeb3.PublicKey(MEMO_PROGRAM_ID),
+                        data: Buffer.from(reason, 'utf-8')
+                    }})
+                );
 
-        setStatus(
-          `&gt; BURNED on Solana 🔥<br>` +
-          `<a href="https://solscan.io/tx/${signature}" target="_blank">View on Solscan</a>`
-        );
-      } catch(e){
-        console.error(e);
-        setStatus("&gt; Failed on Solana – check balance and try again.");
-      }
-    }
+                const {{ signature }} = await window.solana.signAndSendTransaction(transaction);
+                await connection.confirmTransaction(signature, 'confirmed');
+                
+                log(`✅ FLAGGED ON SOLANA!<br><a href="https://solscan.io/tx/${{signature}}" target="_blank" style="color:#fff">View Registry Entry</a>`);
 
-    async function flagBase(){
-      try{
-        const web3 = new Web3(window.ethereum);
-        const value = web3.utils.toWei("0.001","ether");
-        const txHash = await web3.eth.sendTransaction({
-          from: account,
-          to: BASE_TREASURY,
-          value
-        });
+            }} catch(e) {{
+                console.error(e);
+                log("❌ Failed: Check Balance or Reject.");
+            }}
 
-        const hash = txHash.transactionHash || txHash; // selon le provider
-        setStatus(
-          `&gt; BURNED on Base 🔥<br>` +
-          `<a href="https://basescan.org/tx/${hash}" target="_blank">View on Basescan</a>`
-        );
-      } catch(e){
-        console.error(e);
-        setStatus("&gt; Failed on Base – check balance, gas and network.");
-      }
-    }
+        }} else {{
+            // --- BASE (EVM): Transaction with Input Data (The Registry Entry) ---
+            try {{
+                const web3 = new Web3(window.ethereum);
+                
+                // Encode the reason string to Hex to store in 'data' field
+                const hexData = web3.utils.utf8ToHex(reason);
+                
+                const txParams = {{
+                    from: userAccount,
+                    to: BASE_TREASURY,
+                    value: web3.utils.toWei("0.001", "ether"), // Fee
+                    data: hexData // THIS IS THE REGISTRY ENTRY
+                }};
 
-    function share(){
-      const text = "Just flagged my hacked wallet as dead with @notmywallet_io – on-chain degen privacy. #NotMyWallet";
-      const url = "https://notmywallet.xyz";
-      const xUrl = "https://x.com/intent/tweet?text=" + encodeURIComponent(text + " " + url);
-      window.open(xUrl,"_blank");
-    }
+                const txHash = await window.ethereum.request({{
+                    method: 'eth_sendTransaction',
+                    params: [txParams],
+                }});
+                
+                log(`✅ FLAGGED ON BASE!<br><a href="https://basescan.org/tx/${{txHash}}" target="_blank" style="color:#fff">View Registry Entry</a>`);
+
+            }} catch(e) {{
+                console.error(e);
+                log("❌ Failed: Check ETH Balance.");
+            }}
+        }}
+    }}
+
+    function share() {{
+        const text = "I just flagged my hacked wallet on-chain using @notmywallet_io. Don't send funds here anymore.";
+        window.open("https://x.com/intent/tweet?text=" + encodeURIComponent(text));
+    }}
   </script>
+
 </body>
 </html>
+"""
+
+# 4. Sauvegarde du fichier final
+with open("index.html", "w") as f:
+    f.write(html_content)
+
+print("✅ Site généré avec succès !")
+files.download('index.html')
