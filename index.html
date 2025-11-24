@@ -528,10 +528,12 @@
       }
     }
 
-    // ---- SOLANA FLAG: transfer + Memo NMW_FLAG|reason ----
+    // ---- SOLANA FLAG: transfer + Memo NMW_FLAG|reason (RPC ALCHEMY) ----
     async function flagSolana(reason){
       try{
-        var connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com", "confirmed");
+        const endpoint = "https://solana-mainnet.g.alchemy.com/v2/demo";
+        const connection = new solanaWeb3.Connection(endpoint, "confirmed");
+
         var fromPubkey = window.solana.publicKey;
         var toPubkey   = new solanaWeb3.PublicKey(SOL_TREASURY);
 
@@ -555,7 +557,7 @@
         tx.recentBlockhash = bh.blockhash;
 
         var res = await window.solana.signAndSendTransaction(tx);
-        var sig = res.signature || res; // Phantom renvoie {signature}
+        var sig = res.signature || res;
 
         await connection.confirmTransaction(
           { signature: sig, blockhash: bh.blockhash, lastValidBlockHeight: bh.lastValidBlockHeight },
